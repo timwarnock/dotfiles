@@ -1,0 +1,28 @@
+# ^A :source ~/.screenrc
+bind , source "$HOME/.screenrc"
+
+# no default message, no audible bell
+startup_message off
+vbell on
+
+# more usable scrollback
+scrollback 5000
+
+# detach on hangup
+autodetach on
+
+# make bold work
+attrcolor b ".I"
+attrcolor i "+b"
+
+# hardstatus and caption
+hardstatus alwayslastline "%{= wk}%-w%{= Bw} %n %t %{-}%+w %-= %H [ %Y-%m-%d %c:%s ]"
+caption splitonly "%{= wK}%-w%?%F%{= bw}%:%{= Wk}%? %n %t %{-}%+w %-= "
+
+# resize
+bind + resize +5
+bind - resize -5
+bind = resize =
+
+# bindings
+bind % screen -t top top
