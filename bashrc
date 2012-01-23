@@ -28,12 +28,17 @@ export PYTHONSTARTUP=~/.pythonstartup
 # set smiley cursor
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo ':('; fi; }
 export PS1="\[\033[01;31m\]\u@\h\[\033[01;34m\]:\w \$(smiley)\[\033[00m\] "
+# export PS1="\[\033[01;31m\]\u@\h\[\033[01;34m\]:\w\n\$(smiley)\[\033[00m\] "
 
 # mysql prompt
 export MYSQL_PS1='\d> '
 
 # svn
 export SVN_EDITOR=vim
+
+# cvs
+export CVSROOT=:ext:twarnock@cvs.prvt.nytimes.com:/nytd/nytimes/src/cvs
+export CVS_RSH=ssh
 
 # ls aliases
 ls --color=tty >/dev/null 2>&1
@@ -95,5 +100,12 @@ function _sshconn() {
   echo "ssh -A $1"
   ssh -A $1
 }
-function timwarnock { _sshconn 'timwarnock.com'; }
+function laptop { _sshconn 'timothy-warnock-7303.nyhq.nytint.com'; }
+function profileapi01 { _sshconn profileapi01.qprvt.nytimes.com; }
+function profileapi02 { _sshconn profileapi02.qprvt.nytimes.com; }
+function profileapi03 { _sshconn profileapi03.qprvt.nytimes.com; }
+function profileapi04 { _sshconn profileapi04.qprvt.nytimes.com; }
+function sartre-reporting { _sshconn sartre-reporting03.qprvt.nytimes.com; }
+function userprefs-proc01 { _sshconn userprefs-proc01.qprvt.nytimes.com; }
+function app1 { _sshconn app1.prvt.nytimes.com; }
 
