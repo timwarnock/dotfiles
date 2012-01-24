@@ -4,11 +4,12 @@
 
 set tabstop=4
 set nu
+set modeline
+# set noautoindent
+
+colors koehler
 syntax on
 set showmatch
-set noautoindent
-
 set hlsearch
 hi search guibg=LightBlue 
-colors koehler
 
