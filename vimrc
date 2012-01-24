@@ -1,5 +1,5 @@
 ##
-## .vimrc
+## ~/.vimrc
 ##
 
 set tabstop=4
