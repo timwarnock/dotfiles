@@ -12,4 +12,5 @@ syntax on
 set showmatch
 set hlsearch
 hi search guibg=LightBlue 
+# :noh to turn off highlighted matches
 
