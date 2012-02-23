@@ -97,3 +97,19 @@ function _sshconn() {
 }
 function timwarnock { _sshconn 'timwarnock.com'; }
 
+
+# tunnels
+function _tunnel() {
+	CMD="ssh -f `whoami`@$1 -L $2 -N"
+	PID=`ps -e | grep "$CMD" | grep -v grep | awk '{ print $1 }'`
+	if [ ! "$PID" == "" ]; then
+		echo "killing old tunnel"
+		kill -9 $PID
+		sleep 1
+	fi
+	echo $CMD
+	$CMD
+}
+# e.g.,
+# function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
+
