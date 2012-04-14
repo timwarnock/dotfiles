@@ -26,3 +26,6 @@ bind = resize =
 
 # bindings
 bind % screen -t top top
+
+#
+multiuser on
