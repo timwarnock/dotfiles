@@ -6,7 +6,7 @@ startup_message off
 vbell on
 
 # more usable scrollback
-scrollback 5000
+defscrollback 5000
 
 # detach on hangup
 autodetach on
@@ -23,9 +23,14 @@ caption splitonly "%{= wK}%-w%?%F%{= bw}%:%{= Wk}%? %n %t %{-}%+w %-= "
 bind + resize +5
 bind - resize -5
 bind = resize =
+bind _ resize max
 
 # bindings
 bind % screen -t top top
+bind s eval split focus next next
+bind S eval split focus next next
+bind N eval "number $WINDOW+1"
+bind P eval "number $WINDOW-1"
 
 #
 multiuser on
