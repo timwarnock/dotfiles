@@ -1,16 +1,28 @@
-##
-## ~/.vimrc
-##
+"
+" ~/.vimrc
+"
 
 set tabstop=4
 set nu
 set modeline
-# set noautoindent
+set nolist
+set nowrap
+set textwidth=0
+" set noautoindent
 
-colors koehler
 syntax on
+"colors koehler
+colorscheme desert
 set showmatch
 set hlsearch
 hi search guibg=LightBlue 
-# :noh to turn off highlighted matches
+" :noh to turn off highlighted matches
+
+" enable mouse
+set mouse=a
+set ttymouse=xterm2
+
+" set backspace=2
+" set t_kb=
+
 
