@@ -43,7 +43,7 @@ PScPURP="\e[01;35m\]"
 PScW="\e[01;37m\]"
 PScEND="\e[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
-export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""laptop$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
+export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
 
 # svn
 export SVN_EDITOR=vim
