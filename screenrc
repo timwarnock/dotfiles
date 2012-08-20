@@ -34,3 +34,4 @@ bind P eval "number $WINDOW-1"
 
 #
 multiuser on
+

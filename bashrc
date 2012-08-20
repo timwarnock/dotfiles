@@ -138,5 +138,12 @@ function _tunnel() {
 
 # load any local settings (specific to environment)
 if [ -e ~/.bashrc_local ]; then
-  . .bashrc_local
+  . ~/.bashrc_local
 fi
+
+
+# universal screen
+if [ "$TERM" != "screen" ]; then
+  screen -xR
+fi
+
