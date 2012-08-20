@@ -143,7 +143,7 @@ fi
 
 
 # universal screen
-if [ "$TERM" != "screen" ]; then
-  screen -xR
-fi
+#if [ "$TERM" != "screen" ]; then
+#  screen -xR
+#fi
 
