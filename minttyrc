@@ -1,12 +1,10 @@
-
 Term=xterm-256color
 Charset=UTF-8
 Locale=en_US
 Transparency=medium
 Columns=140
 Rows=40
-
-OpaqueWhenFocused=yes
+OpaqueWhenFocused=no
 BoldAsFont=no
 FontSmoothing=default
 CursorType=block
@@ -17,7 +15,6 @@ ConfirmExit=no
 PgUpDnScroll=no
 SwitchShortcuts=yes
 Scrollbar=none
-
 CopyAsRTF=no
 ZoomShortcuts=no
 FontHeight=10

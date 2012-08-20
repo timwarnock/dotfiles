@@ -39,14 +39,14 @@ function msdebug() {
 export PYTHONSTARTUP=~/.pythonstartup
 
 # set smiley cursor
-PScBLK="\e[01;30m\]"
-PScRED="\e[0;31m\]"
-PScDRED="\e[01;31m\]"
-PScBLU="\e[00;34m\]"
-PScDBLU="\e[01;34m\]"
-PScPURP="\e[01;35m\]"
-PScW="\e[01;37m\]"
-PScEND="\e[0m\]"
+PScBLK="\[\033[01;30m\]"
+PScRED="\[\033[0;31m\]"
+PScDRED="\[\033[01;31m\]"
+PScBLU="\[\033[00;34m\]"
+PScDBLU="\[\033[01;34m\]"
+PScPURP="\[\033[01;35m\]"
+PScW="\[\033[01;37m\]"
+PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
 export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
 
