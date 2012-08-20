@@ -1,3 +1,8 @@
+#
+# this is a .bashrc file I use across multiple environments,
+# environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
+#
+#
 
 ## backspace
 if [ -t 0 ]; then
