@@ -81,26 +81,28 @@ alias sqlplus='rlwrap sqlplus'
 
 # ssh agent -- for shared home directory across hosts
 SSH_ENV=$HOME/.ssh/.environment.`hostname`
+SSH_LOG=$HOME/.ssh/.log.`hostname`
 function start_agent {
-  echo "Starting a new ssh-agent on this host"
+  echo "Starting a new ssh-agent on this host" >> $SSH_LOG
   ssh-agent | sed 's/^echo/#echo/' > ${SSH_ENV}
   chmod 600 ${SSH_ENV}
   . ${SSH_ENV} > /dev/null
   ssh-add;
-  echo succeeded
+  echo "succeeded" >> $SSH_LOG
 }
 
 ## ssh-agent
 if [ -e "$SSH_AUTH_SOCK" ]; then
-  echo "Using ${SSH_AUTH_SOCK}"
+  echo "`date` Using ${SSH_AUTH_SOCK}" > $SSH_LOG
 elif [ -f "${SSH_ENV}" ]; then
-  echo "Using ${SSH_ENV}"
+  echo "`date` Using ${SSH_ENV}" > $SSH_LOG
   . ${SSH_ENV} > /dev/null
   ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-    echo "${SSH_ENV} agent is no longer running"
+    echo "`date` ${SSH_ENV} agent is no longer running" > $SSH_LOG
     start_agent;
   }
 else
+  echo "`date` No ssh-agent found" > $SSH_LOG
   start_agent;
 fi
 
@@ -109,7 +111,8 @@ function _sshconn() {
   echo "ssh -A $1"
   ssh -A $1
 }
-function timwarnock { _sshconn 'timwarnock.com'; }
+# e.g.,
+# function timwarnock { _sshconn 'timwarnock.com'; }
 
 
 # tunnels
@@ -127,3 +130,8 @@ function _tunnel() {
 # e.g.,
 # function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
 
+
+# load any local settings (specific to environment)
+if [ -e ~/.bashrc_local ]; then
+  . .bashrc_local
+fi
