@@ -122,7 +122,11 @@ function _sshconn() {
 
 # tunnels
 function _tunnel() {
-	CMD="ssh -f `whoami`@$1 -L $2 -N"
+    _ME=`whoami`
+	if [ $# -eq 3 ]; then
+      _ME=$3
+    fi
+	CMD="ssh -f $_ME@$1 -L $2 -N"
 	PID=`ps -e | grep "$CMD" | grep -v grep | awk '{ print $1 }'`
 	if [ ! "$PID" == "" ]; then
 		echo "killing old tunnel"
