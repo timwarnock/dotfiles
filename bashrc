@@ -50,6 +50,10 @@ PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
 export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
 
+# set prompt command (to change window title)
+export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}: ${PWD/#$HOME/~}\007"'
+
+
 # svn
 export SVN_EDITOR=vim
 alias svne='svn propedit svn:externals'
