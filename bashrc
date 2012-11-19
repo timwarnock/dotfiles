@@ -56,7 +56,8 @@ export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}: ${PWD/#$HOME/~}
 
 # svn
 export SVN_EDITOR=vim
-alias svne='svn propedit svn:externals'
+alias svne='echo svn propedit svn:externals; svn propedit svn:externals'
+alias svnu='echo svn up --ignore-externals; svn up --ignore-externals'
 
 # ls aliases
 ls --color=tty >/dev/null 2>&1
