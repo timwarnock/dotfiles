@@ -117,15 +117,17 @@ else
 fi
 
 # hosts
+# e.g.,
+# function timwarnock { _sshconn 'timwarnock.com'; }
 function _sshconn() {
   echo "ssh -A $1"
   ssh -A $1
 }
-# e.g.,
-# function timwarnock { _sshconn 'timwarnock.com'; }
 
 
 # tunnels
+# e.g.,
+# function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
 function _tunnel() {
     _ME=`whoami`
 	if [ $# -eq 3 ]; then
@@ -141,8 +143,6 @@ function _tunnel() {
 	echo $CMD
 	$CMD
 }
-# e.g.,
-# function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
 
 
 # load any local settings (specific to environment)
