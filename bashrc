@@ -2,7 +2,9 @@
 # this is a .bashrc file I use across multiple environments,
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
-#
+
+# turn off trap DEBUG (turned on at the end for screen window title)
+trap "" DEBUG
 
 ## backspace
 if [ -t 0 ]; then
@@ -50,8 +52,6 @@ PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
 export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
 
-# set prompt command (to change window title)
-export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}: ${PWD/#$HOME/~}\007"'
 
 
 # svn
@@ -156,3 +156,23 @@ fi
 #  screen -xR
 #fi
 
+# Show the current directory AND running command in the screen window title:
+# http://www.davidpashley.com/articles/xterm-titles-with-bash.html
+if [ "$TERM" = "screen" ]; then
+	#set -o functrace
+	export PROMPT_COMMAND='true'
+	set_screen_window() {
+	  HPWD=`basename "$PWD"`
+	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
+	  case "$BASH_COMMAND" in
+		*\033]0*);;
+		"true")
+			printf '\ek%s\e\\' "$HPWD:"
+			;;
+		*)
+			printf '\ek%s\e\\' "$HPWD:${BASH_COMMAND:0:20}"
+			;;
+	  esac
+	}
+	trap set_screen_window DEBUG
+fi
