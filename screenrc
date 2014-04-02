@@ -5,6 +5,9 @@ bind , source "$HOME/.screenrc"
 startup_message off
 vbell on
 
+# automagic window title
+#shelltitle ") |what:"
+
 # more usable scrollback
 defscrollback 5000
 
@@ -32,8 +35,11 @@ bind S eval split focus next next
 bind N eval "number $WINDOW+1"
 bind P eval "number $WINDOW-1"
 
-#
+# multiuser setup
 multiuser on
+aclchg READ -w "#"
+#aclgrp username READ
+#aclumask "?"+r-wx "??"+r-wx
 
 # source local
 source .screenrc_local
