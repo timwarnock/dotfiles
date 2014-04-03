@@ -15,7 +15,7 @@ fi
 set -o vi
 
 # path
-export PATH=.:/usr/local/bin:~/bin:$PATH
+export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
 # check if a command exists (similar to command -v)
 command_exists () {
@@ -51,8 +51,6 @@ PScW="\[\033[01;37m\]"
 PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
 export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
-
-
 
 # svn
 export SVN_EDITOR=vim
@@ -156,14 +154,15 @@ fi
 #  screen -xR
 #fi
 
-# Show the current directory AND running command in the screen window title:
-# http://www.davidpashley.com/articles/xterm-titles-with-bash.html
+# Show the current directory AND running command in the screen window title
+# inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
 if [ "$TERM" = "screen" ]; then
 	#set -o functrace
 	export PROMPT_COMMAND='true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
 	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
+      if [ ${#HPWD} -ge 10 ]; then HPWD='..'${HPWD:${#HPWD}-8:${#HPWD}}; fi
 	  case "$BASH_COMMAND" in
 		*\033]0*);;
 		"true")
@@ -176,3 +175,4 @@ if [ "$TERM" = "screen" ]; then
 	}
 	trap set_screen_window DEBUG
 fi
+
