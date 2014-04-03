@@ -47,10 +47,10 @@ set statusline+=%-10.(c%cv%v%)\               " column offset
 set statusline+=%-12.(%l/%L%)\ %<%P          " line offset
 
 " change the status line based on mode
-hi StatusLine term=reverse ctermbg=0 ctermfg=8
+hi StatusLine term=reverse ctermbg=7 ctermfg=8
 if version >= 700
   au InsertEnter * hi StatusLine term=reverse ctermbg=7 ctermfg=12
-  au InsertLeave * hi StatusLine term=reverse ctermbg=0 ctermfg=8
+  au InsertLeave * hi StatusLine term=reverse ctermbg=7 ctermfg=8
 endif
 
 " screen title

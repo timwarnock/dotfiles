@@ -157,7 +157,6 @@ fi
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
 if [ "$TERM" = "screen" ]; then
-	#set -o functrace
 	export PROMPT_COMMAND='true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
