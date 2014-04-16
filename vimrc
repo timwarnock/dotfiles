@@ -3,12 +3,24 @@
 "
 
 set tabstop=4
+set shiftwidth=4
+set softtabstop=4
 set nu
 set modeline
+set wrap
 set nolist
 set nowrap
 set textwidth=0
-" set noautoindent
+" set expandtab " :set et   :set et!   :retab
+set ai  " set noai
+set cindent
+set copyindent
+set preserveindent
+
+" ctags
+set tags+=tags;$HOME
+map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
+map <C-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 set t_Co=256
 syntax on

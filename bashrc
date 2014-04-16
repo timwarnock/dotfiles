@@ -161,13 +161,16 @@ if [ "$TERM" = "screen" ]; then
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
 	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
-      if [ ${#HPWD} -ge 10 ]; then HPWD='..'${HPWD:${#HPWD}-8:${#HPWD}}; fi
 	  case "$BASH_COMMAND" in
 		*\033]0*);;
 		"true")
+            if [ ${#HPWD} -ge 20 ]; then HPWD='..'${HPWD:${#HPWD}-17:${#HPWD}}; fi
 			printf '\ek%s\e\\' "$HPWD:"
 			;;
 		*)
+            if [ ${#HPWD} -gt 9 ]; then HPWD='..'${HPWD:${#HPWD}-7:${#HPWD}}; fi
+            ## $HPWD="$HPWD:${BASH_COMMAND:0:20}"
+            ## if [ ${#HPWD} -gt 20 ]; then HPWD=${HPWD:${#HPWD}-18:${#HPWD}}; fi
 			printf '\ek%s\e\\' "$HPWD:${BASH_COMMAND:0:20}"
 			;;
 	  esac
