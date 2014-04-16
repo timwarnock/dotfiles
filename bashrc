@@ -2,7 +2,9 @@
 # this is a .bashrc file I use across multiple environments,
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
-#
+
+# turn off trap DEBUG (turned on at the end for screen window title)
+trap "" DEBUG
 
 ## backspace
 if [ -t 0 ]; then
@@ -13,7 +15,7 @@ fi
 set -o vi
 
 # path
-export PATH=.:/usr/local/bin:~/bin:$PATH
+export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
 # check if a command exists (similar to command -v)
 command_exists () {
@@ -49,10 +51,6 @@ PScW="\[\033[01;37m\]"
 PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
 export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
-
-# set prompt command (to change window title)
-export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}: ${PWD/#$HOME/~}\007"'
-
 
 # svn
 export SVN_EDITOR=vim
@@ -117,15 +115,17 @@ else
 fi
 
 # hosts
+# e.g.,
+# function timwarnock { _sshconn 'timwarnock.com'; }
 function _sshconn() {
   echo "ssh -A $1"
   ssh -A $1
 }
-# e.g.,
-# function timwarnock { _sshconn 'timwarnock.com'; }
 
 
 # tunnels
+# e.g.,
+# function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
 function _tunnel() {
     _ME=`whoami`
 	if [ $# -eq 3 ]; then
@@ -141,8 +141,6 @@ function _tunnel() {
 	echo $CMD
 	$CMD
 }
-# e.g.,
-# function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
 
 
 # load any local settings (specific to environment)
@@ -155,4 +153,28 @@ fi
 #if [ "$TERM" != "screen" ]; then
 #  screen -xR
 #fi
+
+# Show the current directory AND running command in the screen window title
+# inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
+if [ "$TERM" = "screen" ]; then
+	export PROMPT_COMMAND='true'
+	set_screen_window() {
+	  HPWD=`basename "$PWD"`
+	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
+	  case "$BASH_COMMAND" in
+		*\033]0*);;
+		"true")
+            if [ ${#HPWD} -ge 20 ]; then HPWD='..'${HPWD:${#HPWD}-17:${#HPWD}}; fi
+			printf '\ek%s\e\\' "$HPWD:"
+			;;
+		*)
+            if [ ${#HPWD} -gt 9 ]; then HPWD='..'${HPWD:${#HPWD}-7:${#HPWD}}; fi
+            ## $HPWD="$HPWD:${BASH_COMMAND:0:20}"
+            ## if [ ${#HPWD} -gt 20 ]; then HPWD=${HPWD:${#HPWD}-18:${#HPWD}}; fi
+			printf '\ek%s\e\\' "$HPWD:${BASH_COMMAND:0:20}"
+			;;
+	  esac
+	}
+	trap set_screen_window DEBUG
+fi
 
