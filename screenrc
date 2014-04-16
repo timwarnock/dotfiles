@@ -34,4 +34,6 @@ bind P eval "number $WINDOW-1"
 
 #
 multiuser on
-
+aclchg READ -w "#"
+#aclgrp username READ
+#aclumask "?"+r-wx "??"+r-wx
