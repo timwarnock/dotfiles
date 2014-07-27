@@ -78,8 +78,6 @@ if &term == "screen"
   let &titlestring = "vim(" . expand("%:t") . ")"
   set t_ts=k 
   set t_fs=\
-  "set t_fs=]1;
-  "set t_fs=
   set title
 endif
 autocmd TabEnter,WinEnter,BufReadPost,FileReadPost,BufNewFile * let &titlestring = 'vim(' . expand("%:t") . ')'
