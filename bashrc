@@ -86,6 +86,16 @@ alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }
 alias tags='ctags -R -f ~/.tags -h .h.H.hh.hpp.hxx.h++.inc.def --langmap=php:.php.php3.php4.phtml.inc'
 alias sqlplus='rlwrap sqlplus'
 
+# user functions
+function datsize {
+    if [ -e $1 ]; then
+        rows=$(wc -l < $1)
+        cols=$(head -1 $1 | awk '{ print NF }')
+        echo "$rows X $cols $1"
+    else
+        return 1
+    fi
+}
 
 # ssh agent -- for shared home directory across hosts
 SSH_ENV=$HOME/.ssh/.environment.`hostname`

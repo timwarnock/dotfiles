@@ -6,22 +6,30 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set nu
-set modeline
+set modeline " /* vim: set ts=4 sw=4 expandtab : */
 set wrap
 set nolist
-set nowrap
 set textwidth=0
-" set expandtab " :set et   :set et!   :retab
+set expandtab " :set et   :set et!   :retab
 set ai  " set noai
 set cindent
+set cinkeys-=0#
+set indentkeys-=0#
 set copyindent
 set preserveindent
+
+
+" use ; for : mode
+nnoremap ; :
 
 " ctags
 set tags+=tags;$HOME
 map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 map <C-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
+set encoding=utf-8
+set fillchars+=stl:\ ,stlnc:\
+let g:Powerline_symbols = 'fancy'
 set t_Co=256
 syntax on
 colorscheme elflord
