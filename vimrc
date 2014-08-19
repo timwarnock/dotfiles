@@ -31,6 +31,7 @@ set encoding=utf-8
 set fillchars+=stl:\ ,stlnc:\
 let g:Powerline_symbols = 'fancy'
 set t_Co=256
+let g:solarized_termcolors=256
 syntax on
 colorscheme elflord
 "colorscheme railscast
