@@ -24,7 +24,7 @@ VERIFY_LOCATION=""
 
 
 ## if autossh is installed, use it
-SSH_CMD="autossh"
+SSH_CMD="autossh -M0"
 autossh -V >/dev/null 2>&1
 if [ $? -ne 0 ]; then
   SSH_CMD="ssh"
@@ -34,7 +34,7 @@ fi
 REVERSE_TUNNEL="$SSH_CMD -i $SSH_KEY -q -nNT -R :$REMOTE_PORT:localhost:22 $REMOTE_HOST"
 
 ## start tunnel if not already running
-pgrep -f "$REVERSE_TUNNEL" > /dev/null 2>&1 || $REVERSE_TUNNEL
+pgrep -f "R :$REMOTE_PORT:localhost:22 $REMOTE_HOST" > /dev/null 2>&1 || $REVERSE_TUNNEL
 
 ## verify tunnel is listening on remote host
 ssh -i $SSH_KEY $REMOTE_HOST 'ss -ltn' | grep $REMOTE_PORT >/dev/null 2>&1

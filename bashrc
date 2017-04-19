@@ -7,9 +7,9 @@
 trap "" DEBUG
 
 ## backspace
-if [ -t 0 ]; then
-  stty erase '^H'
-fi
+#if [ -t 0 ]; then
+#  stty erase '^H'
+#fi
 
 # set vi shell
 set -o vi
@@ -141,15 +141,17 @@ function _tunnel() {
 	if [ $# -eq 3 ]; then
       _ME=$3
     fi
-	CMD="ssh -f $_ME@$1 -L $2 -N"
-	PID=`ps -e | grep "$CMD" | grep -v grep | awk '{ print $1 }'`
-	if [ ! "$PID" == "" ]; then
-		echo "killing old tunnel"
-		kill -9 $PID
-		sleep 1
-	fi
-	echo $CMD
-	$CMD
+    ## if autossh is installed, use it
+    SSH_CMD="autossh -M0"
+    autossh -V >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        SSH_CMD="ssh"
+    fi
+    ## start tunnel if not already running
+    SSH_OPTS="$_ME@$1 -L $2 -N"
+	TUNNEL_CMD="$SSH_CMD -f $SSH_OPTS"
+    echo $TUNNEL_CMD
+    pgrep -f "$SSH_OPTS" > /dev/null 2>&1 || $TUNNEL_CMD
 }
 
 
