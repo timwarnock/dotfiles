@@ -16,6 +16,7 @@ set cindent
 set cinkeys-=0#
 set indentkeys-=0#
 set copyindent
+set pastetoggle=<F2>
 set preserveindent
 
 
