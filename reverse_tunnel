@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# e.g., crontab every 5 minutes
+# */5 * * * * ~/.ssh/reverse_tunnel >/dev/null 2>&1
+#
+# -OR-
+# */5 * * * * ~/.ssh/reverse_tunnel hostname port >/dev/null 2>&1
+
+## set defaults (or use .ssh/config)
+SSH_KEY=~/.ssh/timwarnock
+
+## supply hostname and port, or use commandline
+REMOTE_HOST=victor@timwarnock.com
+REMOTE_PORT=22022
+if [ $# == 2 ]; then
+  REMOTE_HOST=$1
+  REMOTE_PORT=$2
+fi
+
+
+## upload a file to REMOTE_HOST containing the public-facing IP of this localhost
+## OR, leave this empty (to do nothing)
+VERIFY_LOCATION=""
+
+
+## if autossh is installed, use it
+SSH_CMD="autossh"
+autossh -V >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  SSH_CMD="ssh"
+fi
+
+## reverse tunnel command
+REVERSE_TUNNEL="$SSH_CMD -i $SSH_KEY -q -nNT -R :$REMOTE_PORT:localhost:22 $REMOTE_HOST"
+
+## start tunnel if not already running
+pgrep -f "$REVERSE_TUNNEL" > /dev/null 2>&1 || $REVERSE_TUNNEL
+
+## verify tunnel is listening on remote host
+ssh -i $SSH_KEY $REMOTE_HOST 'ss -ltn' | grep $REMOTE_PORT >/dev/null 2>&1
+if [ $? -ne 0 ] ; then
+   echo "something is wrong, I can't tell if $REMOTE_PORT is listening on $REMOTE_HOST"
+else
+   echo "Great, it looks like $REMOTE_PORT is listening on $REMOTE_HOST"
+   public_ip=`dig +short myip.opendns.com @resolver1.opendns.com`
+   if [ ! -z "$VERIFY_LOCATION" ]; then
+      ssh -i $SSH_KEY $REMOTE_HOST "echo $public_ip > $VERIFY_LOCATION"
+      echo "public IP $public_ip has been posted to $VERIFY_LOCATION"
+   fi
+fi
+
