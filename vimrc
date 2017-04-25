@@ -1,12 +1,12 @@
 "
 " ~/.vimrc
 "
-
+set nocompatible
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set nu
-set modeline " /* vim: set ts=4 sw=4 expandtab : */
+set modeline                " /* vim: set ts=4 sw=4 expandtab : */
 set wrap
 set nolist
 set textwidth=0
@@ -18,6 +18,19 @@ set indentkeys-=0#
 set copyindent
 set pastetoggle=<F2>
 set preserveindent
+
+" pathogen
+execute pathogen#infect()
+
+"
+" NERDTree
+"
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+let NERDTreeQuitOnOpen = 1
+let NERDTreeAutoDeleteBuffer = 1
+nnoremap <Leader>f :NERDTreeToggle<Enter>
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
 
 
 " use ; for : mode
