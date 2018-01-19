@@ -20,7 +20,7 @@ fi
 
 ## upload a file to REMOTE_HOST containing the public-facing IP of this localhost
 ## OR, leave this empty (to do nothing)
-VERIFY_LOCATION=""
+VERIFY_LOCATION="avant.net/cosmos"
 
 
 ## if autossh is installed, use it
@@ -37,10 +37,9 @@ REVERSE_TUNNEL="$SSH_CMD -i $SSH_KEY -q -nNT -R :$REMOTE_PORT:localhost:22 $REMO
 pgrep -f "R :$REMOTE_PORT:localhost:22 $REMOTE_HOST" > /dev/null 2>&1 || $REVERSE_TUNNEL
 
 ## verify tunnel is listening on remote host
-#ssh -i $SSH_KEY $REMOTE_HOST 'ss -ltn' | grep $REMOTE_PORT >/dev/null 2>&1
-ssh -i $SSH_KEY $REMOTE_HOST "nc -z localhost $REMOTE_PORT" >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "something is wrong, I can't tell if $REMOTE_PORT is listening on $REMOTE_HOST"
+ssh -i $SSH_KEY $REMOTE_HOST 'ss -ltn' | grep $REMOTE_PORT >/dev/null 2>&1
+if [ $? -ne 0 ] ; then
+   echo "something is wrong, I can't tell if $REMOTE_PORT is listening on $REMOTE_HOST"
 else
    echo "Great, it looks like $REMOTE_PORT is listening on $REMOTE_HOST"
    public_ip=`dig +short myip.opendns.com @resolver1.opendns.com`
