@@ -1,0 +1,5 @@
+
+sudo vi /usr/share/X11/xorg.conf.d/10-evdev.conf
+
+restart
+is there a better way? :(

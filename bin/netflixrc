@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#
+export DISPLAY=":0"
+
+
+# make netflix window active
+xdotool search --name 'netflix' windowactivate --sync
+
+#
+CMD=' '
+declare -A nflx
+nflx=(
+  [p]=' '
+  [f]=f
+  [' ']=' '
+  [n]=n
+  [no]=no
+  [nop]=nop
+)
+if (( $# > 0 )); then
+  if [[ ${nflx[$1]} ]]; then
+    CMD=${nflx[$1]}
+  fi
+fi
+
+
+# send command
+xdotool getactivewindow type "$CMD"
+

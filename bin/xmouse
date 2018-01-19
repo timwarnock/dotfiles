@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+#
+export DISPLAY=":0"
+
+echo "xmouse! press q to quit, h for help"
+
+function print_help() {
+  echo "xmouse commands:
+  h - print help
+
+  Mouse Movements
+  w - move 100 pixels up
+  a - move 100 pixels left
+  s - move 100 pixels down
+  d - move 100 pixels right
+
+  Mouse Buttons
+  c - mouse click
+  r - right mouse click
+  u - mouse wheel Up
+  p - mouse wheel Down
+
+  Mouse Button dragging
+  e - mouse down (start dragging)
+  x - mouse up (end dragging)
+
+  Mouse Movements small
+  i - move 10 pixels up
+  j - move 10 pixels left
+  k - move 10 pixels down
+  l - move 10 pixels right
+
+  Keyboard (experimental)
+  Press esc key to toggle between keyboard and mouse modes
+  
+"
+}
+
+KEY_IN="Off"
+IFS=''
+while read -rsn1 input; do
+  #
+  # toggle mouse and keyboard mode
+  case "$input" in
+  $'\e') if [ "$KEY_IN" = "On" ]; then
+           KEY_IN="Off"
+           echo "MOUSE mode"
+         else
+           KEY_IN="On"
+           echo "KEYBOARD mode"
+         fi
+     continue
+     ;;
+  esac
+  #
+  # keyboard mode
+  if [ "$KEY_IN" = "On" ]; then
+  case "$input" in
+  $'\x7f') xdotool key BackSpace ;;
+  $' ')  xdotool key space ;;
+  $'')   xdotool key Return ;;
+  $':')  xdotool key colon ;;
+  $';')  xdotool key semicolon ;;
+  $',')  xdotool key comma ;;
+  $'.')  xdotool key period ;;
+  $'-')  xdotool key minus ;;
+  $'+')  xdotool key plus ;;
+  $'!')  xdotool key exclam ;;
+  $'"')  xdotool key quotedbl ;;
+  $'#')  xdotool key numbersign ;;
+  $'$')  xdotool key dollar ;;
+  $'%')  xdotool key percent ;;
+  $'&')  xdotool key ampersand ;;
+  $'\'') xdotool key apostrophe ;;
+  $'(')  xdotool key parenleft ;;
+  $')')  xdotool key parenright ;;
+  $'*')  xdotool key asterisk ;;
+  $'/')  xdotool key slash ;;
+  $'<')  xdotool key less ;;
+  $'=')  xdotool key equal ;;
+  $'>')  xdotool key greater ;;
+  $'?')  xdotool key question ;;
+  $'@')  xdotool key at ;;
+  $'[')  xdotool key bracketleft ;;
+  $'\\') xdotool key backslash ;;
+  $']')  xdotool key bracketright ;;
+  $'^')  xdotool key asciicircum ;;
+  $'_')  xdotool key underscore ;;
+  $'`')  xdotool key grave ;;
+  $'{')  xdotool key braceleft ;;
+  $'|')  xdotool key bar ;;
+  $'}')  xdotool key braceright ;;
+  $'~')  xdotool key asciitilde ;;
+  *)     xdotool key "$input" ;;
+  esac
+  #
+  # mouse mode
+  else
+  case "$input" in
+  q) break ;;
+  h) print_help ;;
+  a) xdotool mousemove_relative -- -100 0 ;;
+  s) xdotool mousemove_relative 0 100 ;;
+  d) xdotool mousemove_relative 100 0 ;;
+  w) xdotool mousemove_relative -- 0 -100 ;;
+  c) xdotool click 1 ;;
+  r) xdotool click 3 ;;
+  u) xdotool click 4 ;;
+  p) xdotool click 5 ;;
+  e) xdotool mousedown 1 ;;
+  x) xdotool mouseup 1 ;;
+  j) xdotool mousemove_relative -- -10 0 ;;
+  k) xdotool mousemove_relative 0 10 ;;
+  l) xdotool mousemove_relative 10 0 ;;
+  i) xdotool mousemove_relative -- 0 -10 ;;
+  *) echo "$input - not defined in mouse map" ;;
+  esac
+  fi
+done
+
+
