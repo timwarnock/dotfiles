@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # set volume and play vlc playlists
+# 
+## TODO merge with vlcrc, e.g., music next, music stop, music pause, music play, music vol 45
 #
 export DISPLAY=":0"
 export PATH=$PATH:~/bin
