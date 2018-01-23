@@ -20,7 +20,7 @@ set pastetoggle=<F2>
 set preserveindent
 
 " pathogen
-execute pathogen#infect()
+" execute pathogen#infect()
 
 "
 " NERDTree

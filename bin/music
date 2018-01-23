@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# set volume and play vlc playlists
+#
+export DISPLAY=":0"
+export PATH=$PATH:~/bin
+
+playlist_dir=/home/twarnock/Music/0_playlist
+playlist_file=Classical.xspf
+volume=45
+Z_OPT=""
+
+
+##
+## gather variables from getopts
+##
+usage() { echo "Usage: [options] [playlist-file]" && grep " .)\ #" $0; }
+while getopts ":d:v:zlh" arg; do
+  case $arg in
+    d) # Specify playlist directory
+      playlist_dir=${OPTARG}
+      ;;
+    v) # Specify volume (default is 45)
+      volume=${OPTARG}
+      ;;
+    z) # randomize playlist
+      Z_OPT=" -Z "
+      ;;
+    l) # list playlists
+      ls -1 $playlist_dir
+      exit 0
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [ $# -gt 0 ]; then
+  playlist_file="$@"
+  ## append .xspf if no extension given
+  if [ "${playlist_file%.*}" == "$playlist_file" ]; then
+    playlist_file=$playlist_file".xspf"
+  fi
+fi
+
+
+## main
+if [ -r "$playlist_dir/$playlist_file" ]; then
+  pkill vlc
+  volume.sh $volume 2>&1 >/dev/null
+  nohup vlc -Z "$playlist_dir/$playlist_file" >/dev/null 2>&1 &
+else
+  (>&2 echo "could not read $playlist_file in $playlist_dir")
+  usage
+  exit 1
+fi
+
+
+
+exit 0
