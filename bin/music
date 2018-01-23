@@ -40,20 +40,21 @@ done
 shift $((OPTIND - 1))
 if [ $# -gt 0 ]; then
   playlist_file="$@"
-  ## append .xspf if no extension given, and the relavant file exists
-  if [ "${playlist_file%.*}" == "$playlist_file" -a -r "$playlist_dir/$playlist_file"".xspf" ]; then
+  ## append .xspf if it was omitted
+  if [ -r "$playlist_dir/$playlist_file"".xspf" ]; then
     playlist_file=$playlist_file".xspf"
   fi
 fi
 
-
+##
 ## main
+##
 if [ -r "$playlist_dir/$playlist_file" ]; then
   pkill vlc
   volume.sh $volume 2>&1 >/dev/null
   nohup vlc $Z_OPT "$playlist_dir/$playlist_file" >/dev/null 2>&1 &
 else
-  ## no playlist, check if this is a vlcrc command
+  ## no playlist, check if vlcrc command
   case $playlist_file in
    -|0|+)
      echo "Got it!" ;;
