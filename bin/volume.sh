@@ -16,5 +16,7 @@ if [ ! $PERCENT -ge 0 -o ! $PERCENT -le 100 ]; then
 fi
 
 
-echo "set volume to $PERCENT%"
-pactl -- set-sink-volume 0 "$PERCENT%"
+SINK=`pacmd list-sinks | grep index | awk -F: '{print $2}'`
+#pactl -- set-sink-volume 0 "$PERCENT%"
+echo "attempting to set volume (sink:$SINK) to $PERCENT%"
+pactl set-sink-volume $SINK "$PERCENT%"
