@@ -3,7 +3,8 @@
 # crontab, set the alarm (for example) on weekdays at 7am
 # 0 7 * * 1-5 alarm.sh 60 >/dev/null 2>&1
 #
-export DISPLAY=":0"
+: ${DISPLAY:=":1"}
+export DISPLAY
 export PATH=$PATH:~/bin
 
 WAKEUP_FILE=/home/twarnock/Music/0_playlist/Classical.xspf

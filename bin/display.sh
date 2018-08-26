@@ -3,7 +3,8 @@
 # crontab, if idle for over 90 minutes then turn off display (check every 5 minutes)
 # */5 * * * * display.sh screensave 90 >/dev/null 2>&1
 #
-export DISPLAY=":0"
+#export DISPLAY=":0"
+: ${DISPLAY:=":1"}
 
 #
 # get the idle time

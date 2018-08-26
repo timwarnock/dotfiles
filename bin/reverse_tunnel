@@ -20,7 +20,7 @@ fi
 
 ## upload a file to REMOTE_HOST containing the public-facing IP of this localhost
 ## OR, leave this empty (to do nothing)
-VERIFY_LOCATION="avant.net/cosmos"
+VERIFY_LOCATION="avant.net/umagi"
 
 
 ## if autossh is installed, use it

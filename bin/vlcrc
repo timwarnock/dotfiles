@@ -6,7 +6,7 @@ if [ $# -gt 0 ]; then
   CMD=$1
 fi
 if [ -S $SOCK ]; then
-  nc -U $SOCK <<< "$CMD"
+  nc -q0 -U $SOCK <<< "$CMD"
 else
   (>&2 echo "I can't find VLC socket $SOCK")
 fi

@@ -3,3 +3,9 @@ sudo vi /usr/share/X11/xorg.conf.d/10-evdev.conf
 
 restart
 is there a better way? :(
+
+yes!
+
+xinput
+... get the number of the device, say 9
+xinput disable 9

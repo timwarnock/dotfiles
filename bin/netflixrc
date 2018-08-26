@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 #
-export DISPLAY=":0"
-
+: ${DISPLAY:=":1"}
+export DISPLAY
 
 # make netflix window active
 xdotool search --name 'netflix' windowactivate --sync

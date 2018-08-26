@@ -3,7 +3,8 @@
 # set volume and play vlc playlists
 # 
 #
-export DISPLAY=":0"
+: ${DISPLAY:=":0"}
+export DISPLAY
 export PATH=$PATH:~/bin
 
 music_dir=/home/twarnock/Music

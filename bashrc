@@ -105,7 +105,7 @@ function start_agent {
   ssh-agent | sed 's/^echo/#echo/' > ${SSH_ENV}
   chmod 600 ${SSH_ENV}
   . ${SSH_ENV} > /dev/null
-  ssh-add;
+  #ssh-add 2>/dev/null;
   echo "succeeded" >> $SSH_LOG
 }
 
