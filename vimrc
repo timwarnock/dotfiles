@@ -1,6 +1,7 @@
 "
 " ~/.vimrc
 "
+set encoding=utf-8
 
 set tabstop=4
 set shiftwidth=4
@@ -17,6 +18,11 @@ set cindent
 set copyindent
 set preserveindent
 
+" F2 to toggle paste
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
+
 " ctags
 set tags+=tags;$HOME
 map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
@@ -25,7 +31,7 @@ map <C-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 set t_Co=256
 syntax on
 colorscheme elflord
-"colorscheme railscast
+"colorscheme default
 set showmatch
 set hlsearch
 hi search guibg=LightBlue 

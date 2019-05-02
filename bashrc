@@ -178,3 +178,4 @@ if [ "$TERM" = "screen" ]; then
 	trap set_screen_window DEBUG
 fi
 
+
