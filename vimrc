@@ -2,33 +2,55 @@
 " ~/.vimrc
 "
 set encoding=utf-8
-
+set nocompatible
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set nu
-set modeline
+set modeline                " /* vim: set ts=4 sw=4 expandtab : */
 set wrap
 set nolist
-set nowrap
 set textwidth=0
-" set expandtab " :set et   :set et!   :retab
+set expandtab " :set et   :set et!   :retab
 set ai  " set noai
 set cindent
+set cinkeys-=0#
+set indentkeys-=0#
 set copyindent
+set pastetoggle=<F2>
 set preserveindent
 
 " F2 to toggle paste
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
+" pathogen
+" execute pathogen#infect()
+
+"
+" NERDTree
+"
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+let NERDTreeQuitOnOpen = 1
+let NERDTreeAutoDeleteBuffer = 1
+nnoremap <Leader>f :NERDTreeToggle<Enter>
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
+
+
+" use ; for : mode
+nnoremap ; :
 
 " ctags
 set tags+=tags;$HOME
 map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 map <C-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
+set encoding=utf-8
+set fillchars+=stl:\ ,stlnc:\
+let g:Powerline_symbols = 'fancy'
 set t_Co=256
+let g:solarized_termcolors=256
 syntax on
 colorscheme elflord
 "colorscheme default
@@ -76,8 +98,6 @@ if &term == "screen"
   let &titlestring = "vim(" . expand("%:t") . ")"
   set t_ts=k 
   set t_fs=\
-  "set t_fs=]1;
-  "set t_fs=
   set title
 endif
 autocmd TabEnter,WinEnter,BufReadPost,FileReadPost,BufNewFile * let &titlestring = 'vim(' . expand("%:t") . ')'

@@ -7,9 +7,9 @@
 trap "" DEBUG
 
 ## backspace
-if [ -t 0 ]; then
-  stty erase '^H'
-fi
+#if [ -t 0 ]; then
+#  stty erase '^H'
+#fi
 
 # set vi shell
 set -o vi
@@ -86,6 +86,16 @@ alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }
 alias tags='ctags -R -f ~/.tags -h .h.H.hh.hpp.hxx.h++.inc.def --langmap=php:.php.php3.php4.phtml.inc'
 alias sqlplus='rlwrap sqlplus'
 
+# user functions
+function datsize {
+    if [ -e $1 ]; then
+        rows=$(wc -l < $1)
+        cols=$(head -1 $1 | awk '{ print NF }')
+        echo "$rows X $cols $1"
+    else
+        return 1
+    fi
+}
 
 # ssh agent -- for shared home directory across hosts
 SSH_ENV=$HOME/.ssh/.environment.`hostname`
@@ -95,7 +105,7 @@ function start_agent {
   ssh-agent | sed 's/^echo/#echo/' > ${SSH_ENV}
   chmod 600 ${SSH_ENV}
   . ${SSH_ENV} > /dev/null
-  ssh-add;
+  #ssh-add 2>/dev/null;
   echo "succeeded" >> $SSH_LOG
 }
 
@@ -126,20 +136,25 @@ function _sshconn() {
 # tunnels
 # e.g.,
 # function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
+#  OR FUTURE:  e.g., function magi_tunnel { _tunnel victor@timwarnock.com 22122 localhost 22122 ; }
 function _tunnel() {
     _ME=`whoami`
 	if [ $# -eq 3 ]; then
       _ME=$3
     fi
-	CMD="ssh -f $_ME@$1 -L $2 -N"
-	PID=`ps -e | grep "$CMD" | grep -v grep | awk '{ print $1 }'`
-	if [ ! "$PID" == "" ]; then
-		echo "killing old tunnel"
-		kill -9 $PID
-		sleep 1
-	fi
-	echo $CMD
-	$CMD
+    ## if autossh is installed, use it
+    SSH_CMD="autossh -M0"
+    autossh -V >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        SSH_CMD="ssh"
+    fi
+    ## verify proxyhost port exists
+
+    ## start tunnel if not already running
+    SSH_OPTS="$_ME@$1 -L $2 -N"
+	TUNNEL_CMD="$SSH_CMD -f $SSH_OPTS"
+    echo $TUNNEL_CMD
+    pgrep -f "$SSH_OPTS" > /dev/null 2>&1 || $TUNNEL_CMD
 }
 
 
