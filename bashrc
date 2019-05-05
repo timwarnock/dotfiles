@@ -105,7 +105,7 @@ function start_agent {
   ssh-agent | sed 's/^echo/#echo/' > ${SSH_ENV}
   chmod 600 ${SSH_ENV}
   . ${SSH_ENV} > /dev/null
-  #ssh-add;
+  #ssh-add 2>/dev/null;
   echo "succeeded" >> $SSH_LOG
 }
 
@@ -136,6 +136,7 @@ function _sshconn() {
 # tunnels
 # e.g.,
 # function eg_tunnel { _tunnel proxyhost local-port:privatehost:port ; }
+#  OR FUTURE:  e.g., function magi_tunnel { _tunnel victor@timwarnock.com 22122 localhost 22122 ; }
 function _tunnel() {
     _ME=`whoami`
 	if [ $# -eq 3 ]; then
@@ -147,6 +148,8 @@ function _tunnel() {
     if [ $? -ne 0 ]; then
         SSH_CMD="ssh"
     fi
+    ## verify proxyhost port exists
+
     ## start tunnel if not already running
     SSH_OPTS="$_ME@$1 -L $2 -N"
 	TUNNEL_CMD="$SSH_CMD -f $SSH_OPTS"
@@ -189,4 +192,5 @@ if [ "$TERM" = "screen" ]; then
 	}
 	trap set_screen_window DEBUG
 fi
+
 

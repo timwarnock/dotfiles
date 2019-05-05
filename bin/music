@@ -1,0 +1,115 @@
+#!/bin/bash
+#
+# set volume and play vlc playlists
+# 
+#
+: ${DISPLAY:=":0"}
+export DISPLAY
+export PATH=$PATH:~/bin
+
+music_dir=/home/twarnock/Music
+playlist_dir=$music_dir/0_playlist
+playlist_file=Classical.xspf
+volume=45
+Z_OPT=" -Z "
+
+
+##
+## gather variables from getopts
+##
+usage() { echo "Usage: [options] [playlist-file|command]" && grep " .)\ #" $0;
+  echo "  COMMANDS"
+  cat << EOU
+    p|play|pause
+      toggle play and pause
+    k|kill|s|stop|end|x|exit
+      stops the music and exits the player
+    n|next
+      go to next track
+    prev
+      go to previous track
+    z|rand|random
+      toggle random mode in the player
+    l|ls|list
+      list available playlists
+    ll|lll
+      list all available music directories
+    
+EOU
+}
+while getopts ":d:v:zlh" arg; do
+  case $arg in
+    d) # Specify playlist directory
+      playlist_dir=${OPTARG}
+      ;;
+    v) # Specify volume (default is 45)
+      volume=${OPTARG}
+      ;;
+    z) # play in order, default is random order
+      Z_OPT=""
+      ;;
+    l) # list playlists
+      ls -1 $playlist_dir
+      exit 0
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [ $# -gt 0 ]; then
+  playlist_file="$@"
+fi
+
+
+
+##
+function play_music {
+  pkill vlc
+  volume.sh $volume 2>&1 >/dev/null
+  nohup vlc $Z_OPT "$1" >/dev/null 2>&1 &
+}
+
+
+##
+## try to play music
+## maybe it's a playlist file
+if [ -r "$playlist_dir/$playlist_file" ]; then
+  play_music "$playlist_dir/$playlist_file"
+## maybe there's a matching .xspf 
+elif [ -r "$playlist_dir/$playlist_file"".xspf" ]; then
+  play_music "$playlist_dir/$playlist_file"".xspf"
+## maybe it's a directory of music
+elif [ -e "$music_dir/$playlist_file" ]; then
+  play_music "$music_dir/$playlist_file"
+## hmm, maybe a command
+else
+  case $playlist_file in
+   -|0|+)
+     echo "Got it!" ;;
+   p|play|pause)
+     vlcrc pause ;;
+   k|kill|s|stop|end|x|exit)
+     pkill vlc ;;
+   n|next)
+     vlcrc next ;;
+   prev)
+     vlcrc prev ;;
+   z|rand|random)
+     vlcrc random ;;
+   l|ls|list)
+     ls -1 $playlist_dir ;;
+   ll|lll)
+     ls -1 $music_dir ;;
+   *)
+    (>&2 echo "could not read $playlist_file in $playlist_dir")
+    usage
+    exit 1
+  esac
+fi
+
+
+
+exit 0

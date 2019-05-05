@@ -1,6 +1,7 @@
 "
 " ~/.vimrc
 "
+set encoding=utf-8
 set nocompatible
 set tabstop=4
 set shiftwidth=4
@@ -19,8 +20,12 @@ set copyindent
 set pastetoggle=<F2>
 set preserveindent
 
+" F2 to toggle paste
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
 " pathogen
-execute pathogen#infect()
+" execute pathogen#infect()
 
 "
 " NERDTree
@@ -48,7 +53,7 @@ set t_Co=256
 let g:solarized_termcolors=256
 syntax on
 colorscheme elflord
-"colorscheme railscast
+"colorscheme default
 set showmatch
 set hlsearch
 hi search guibg=LightBlue 
