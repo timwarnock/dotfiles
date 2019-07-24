@@ -3,8 +3,9 @@
 # crontab, if idle for over 90 minutes then turn off display (check every 5 minutes)
 # */5 * * * * display.sh screensave 90 >/dev/null 2>&1
 #
-#export DISPLAY=":0"
-: ${DISPLAY:=":1"}
+: ${DISPLAY:=":0"}
+export DISPLAY
+export XDG_RUNTIME_DIR=/run/user/`id -u`
 
 #
 # get the idle time
@@ -24,7 +25,8 @@ fi
 #
 # check if any audio is playing
 IS_AUDIO="Off"
-cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING 2>&1 >/dev/null
+#cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING 2>&1 >/dev/null
+pacmd list-sink-inputs | grep RUNNING 2>&1 >/dev/null
 if [ $? -eq 0 ]; then
   IS_AUDIO="On"
 fi
@@ -47,8 +49,8 @@ elif [ $# -eq 1 -a "$1" == "off" ]; then
   rm -rf $LASTON
 # force display ON
 elif [ $# -eq 1 -a "$1" == "on" ]; then
-  xset -display $DISPLAY dpms force on
   echo `date +"%s"` >$LASTON
+  xset -display $DISPLAY dpms force on
 #
 # print the idle time in minutes
 elif [ $# -eq 1 -a "$1" == "-m" ]; then
