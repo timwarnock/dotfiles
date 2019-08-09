@@ -16,7 +16,11 @@ if [ ! $PERCENT -ge 0 -o ! $PERCENT -le 100 ]; then
 fi
 
 
-SINK=`pacmd list-sinks | grep index | awk -F: '{print $2}'`
+
+export PULSE_RUNTIME_PATH="/run/user/$(id -u)/pulse/"
+SINK=`pacmd list-sinks | grep 'index:' | awk -F: '{print $2}'`
 #pactl -- set-sink-volume 0 "$PERCENT%"
-echo "attempting to set volume (sink:$SINK) to $PERCENT%"
-pactl set-sink-volume $SINK "$PERCENT%"
+for _sink in $SINK; do
+  echo "attempting to set volume (sink:$_sink) to $PERCENT%"
+  pactl set-sink-volume $_sink "$PERCENT%"
+done
