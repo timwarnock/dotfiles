@@ -2,6 +2,7 @@
 # this is a .bashrc file I use across multiple environments,
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
+export LANG=en_US.UTF-8
 
 # turn off trap DEBUG (turned on at the end for screen window title)
 trap "" DEBUG
