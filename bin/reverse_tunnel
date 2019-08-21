@@ -42,7 +42,7 @@ if [ $? -ne 0 ] ; then
    echo "something is wrong, I can't tell if $REMOTE_PORT is listening on $REMOTE_HOST"
 else
    echo "Great, it looks like $REMOTE_PORT is listening on $REMOTE_HOST"
-   public_ip=`dig +short myip.opendns.com @resolver1.opendns.com`
+   public_ip=`curl -s https://ipinfo.io/ip`
    if [ ! -z "$VERIFY_LOCATION" ]; then
       ssh -i $SSH_KEY $REMOTE_HOST "echo $public_ip > $VERIFY_LOCATION"
       echo "public IP $public_ip has been posted to $VERIFY_LOCATION"

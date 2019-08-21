@@ -20,6 +20,12 @@ set copyindent
 set pastetoggle=<F2>
 set preserveindent
 
+" vim-plug
+call plug#begin('~/.vim/plugged')
+Plug 'tomasiser/vim-code-dark'
+call plug#end()
+
+
 " F2 to toggle paste
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
@@ -52,7 +58,7 @@ let g:Powerline_symbols = 'fancy'
 set t_Co=256
 let g:solarized_termcolors=256
 syntax on
-colorscheme elflord
+colorscheme codedark
 "colorscheme default
 set showmatch
 set hlsearch
@@ -66,7 +72,7 @@ nmap <C-j> :tabp<cr>
 
 " enable mouse
 set mouse=a
-set ttymouse=xterm2
+"set ttymouse=xterm2
 
 " backspace
 set backspace=2
