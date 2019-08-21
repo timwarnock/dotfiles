@@ -72,7 +72,7 @@ nmap <C-j> :tabp<cr>
 
 " enable mouse
 set mouse=a
-set ttymouse=xterm2
+"set ttymouse=xterm2
 
 " backspace
 set backspace=2
