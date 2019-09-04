@@ -76,11 +76,11 @@ alias lll="ls -la $colorflag"
 alias vi=vim
 alias d='dirs -v'
 alias pd='pushd'
-alias pd0='pushd +0 >/dev/null ; dirs -v'
-alias pd1='pushd +1 >/dev/null ; dirs -v'
-alias pd2='pushd +2 >/dev/null ; dirs -v'
-alias pd3='pushd +3 >/dev/null ; dirs -v'
-alias pd4='pushd +4 >/dev/null ; dirs -v'
+alias pd0='pushd +0 >/dev/null && dirs -v'
+alias pd1='pushd +1 >/dev/null && dirs -v'
+alias pd2='pushd +2 >/dev/null && dirs -v'
+alias pd3='pushd +3 >/dev/null && dirs -v'
+alias pd4='pushd +4 >/dev/null && dirs -v'
 # alias ip="/sbin/ifconfig | grep 'inet addr:' | grep -v 127.0.0.1 | awk -F: '{ print \$2 }' | awk '{ print \$1 }'"
 alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }'"
 # alias grep='grep --color=auto'
