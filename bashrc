@@ -172,6 +172,12 @@ fi
 #  screen -xR
 #fi
 
+
+## set window title
+settitle() {
+    printf "\033k$1\033\\"
+}
+
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
 if [ "$TERM" = "screen" ]; then
