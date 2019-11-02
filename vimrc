@@ -58,8 +58,12 @@ let g:Powerline_symbols = 'fancy'
 set t_Co=256
 let g:solarized_termcolors=256
 syntax on
+
 colorscheme codedark
+"preserve terminal background (for transparency)
+hi Normal guibg=NONE ctermbg=NONE
 "colorscheme default
+
 set showmatch
 set hlsearch
 hi search guibg=LightBlue 
