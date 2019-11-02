@@ -76,7 +76,7 @@ nmap <C-j> :tabp<cr>
 
 " enable mouse
 set mouse=a
-set ttymouse=xterm2
+"set ttymouse=xterm2
 
 " backspace
 set backspace=2
@@ -92,9 +92,9 @@ set statusline=
  set statusline+=%{&fileformat}]\             " file format
  set statusline+=%F\                          " file name
  set statusline+=%=                           " right align
-set statusline+=%-12.([%b\=0x%B]%)\           " current char
-set statusline+=%-10.(c%cv%v%)\               " column offset
-set statusline+=%-12.(%l/%L%)\ %<%P          " line offset
+ set statusline+=%-12.([%b\=0x%B]%)\           " current char
+ set statusline+=%-10.(c%cv%v%)\               " column offset
+ set statusline+=%-12.(%l/%L%)\ %<%P          " line offset
 
 " change the status line based on mode
 hi StatusLine term=reverse ctermbg=7 ctermfg=8

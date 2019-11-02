@@ -2,6 +2,7 @@
 # this is a .bashrc file I use across multiple environments,
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
+export LANG=en_US.UTF-8
 
 # turn off trap DEBUG (turned on at the end for screen window title)
 trap "" DEBUG
@@ -75,11 +76,15 @@ alias lll="ls -la $colorflag"
 alias vi=vim
 alias d='dirs -v'
 alias pd='pushd'
-alias pd0='pushd +0 >/dev/null ; dirs -v'
-alias pd1='pushd +1 >/dev/null ; dirs -v'
-alias pd2='pushd +2 >/dev/null ; dirs -v'
-alias pd3='pushd +3 >/dev/null ; dirs -v'
-alias pd4='pushd +4 >/dev/null ; dirs -v'
+alias pd0='pushd +0 >/dev/null && dirs -v'
+alias pd1='pushd +1 >/dev/null && dirs -v'
+alias pd2='pushd +2 >/dev/null && dirs -v'
+alias pd3='pushd +3 >/dev/null && dirs -v'
+alias pd4='pushd +4 >/dev/null && dirs -v'
+alias pd5='pushd +5 >/dev/null && dirs -v'
+alias pd6='pushd +6 >/dev/null && dirs -v'
+alias pd7='pushd +7 >/dev/null && dirs -v'
+alias pd8='pushd +8 >/dev/null && dirs -v'
 # alias ip="/sbin/ifconfig | grep 'inet addr:' | grep -v 127.0.0.1 | awk -F: '{ print \$2 }' | awk '{ print \$1 }'"
 alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }'"
 # alias grep='grep --color=auto'
@@ -170,6 +175,12 @@ fi
 #if [ "$TERM" != "screen" ]; then
 #  screen -xR
 #fi
+
+
+## set window title
+settitle() {
+    printf "\033k$1\033\\"
+}
 
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
