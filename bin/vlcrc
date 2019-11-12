@@ -9,4 +9,5 @@ if [ -S $SOCK ]; then
   nc -q0 -U $SOCK <<< "$CMD"
 else
   (>&2 echo "I can't find VLC socket $SOCK")
+  exit 2
 fi

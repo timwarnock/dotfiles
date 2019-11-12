@@ -1,5 +1,6 @@
 
 # python startup file 
+from importlib import reload
 import readline 
 import rlcompleter 
 import atexit 
