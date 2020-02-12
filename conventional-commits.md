@@ -21,21 +21,16 @@ Because I keep forgetting to use these, here is a sensible commit message conven
 
 
 ## Examples
-Use a specific type such as `feat:`, `fix:`, `test:` and a short *present tense* description.
 
 ```
 feat: add FOO search
-
 fix(search): change case, Foo not FOO
-
 test(search): add additional Foo tests
-
 chore(search): add CI deployment targets
-
 feat: add MAB search algorithm chooser
-
 refactor!: remove MAB, set Foo as default
 BREAKING CHANGE: MAB support is disabled
+docs(search): add README for Foo search
 ```
 
 ## References
