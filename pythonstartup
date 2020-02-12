@@ -3,7 +3,10 @@
 import readline 
 import rlcompleter 
 import atexit 
-import os 
+import os
+
+# pretty print
+from pprint import pprint
 
 # tab completion 
 readline.parse_and_bind('tab: complete') 
@@ -16,3 +19,6 @@ except IOError:
     pass 
 atexit.register(readline.write_history_file, histfile) 
 del os, histfile, readline, rlcompleter
+
+# for module reloading
+from importlib import reload
