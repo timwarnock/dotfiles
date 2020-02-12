@@ -1,6 +1,6 @@
 # Conventional Commits
 
-Commit message convention for auto-generation of a changelog
+Because I keep forgetting to use these, here are is the sensible commit message convention I should be using. By using this convention, commit log messages will read like a changelog.
 
 ```
 <type>[optional scope]: <description>
