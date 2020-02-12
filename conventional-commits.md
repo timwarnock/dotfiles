@@ -21,12 +21,12 @@ type(optional scope): present-tense description
 ## Examples
 
 ```
-feat: add FOO search
+feat: add FOO search algorithm
 fix(search): change case, Foo not FOO
 test(search): add additional Foo tests
 chore(search): add CI deployment targets
 feat: add MAB search algorithm chooser
-refactor: breaking change, remove MAB and set Foo as default
+refactor: BREAKING CHANGE: remove MAB and set Foo search algorithm as default
 docs(search): add README for Foo search
 ```
 
