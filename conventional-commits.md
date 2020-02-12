@@ -11,13 +11,13 @@ Commit message convention for auto-generation of a changelog
 ```
 
 
-## Example
-Use specific type such as `feat:`, `fix:`, `test:` and a short *present tense* description.
+## Examples
+Use a specific type such as `feat:`, `fix:`, `test:` and a short *present tense* description.
 
 ```
 feat: add FOO search
 
-fix(search): case change, Foo not FOO
+fix(search): change case, Foo not FOO
 
 test(search): add additional Foo tests
 
@@ -29,7 +29,7 @@ refactor!: remove MAB, set Foo as default
 BREAKING CHANGE: MAB support is disabled
 ```
 
-Common Types:
+## Common Types
 
 - `feat`: new feature for the user, not a new feature for build script
 - `fix`: bug fix for the user, not a fix to a build script
@@ -39,8 +39,7 @@ Common Types:
 - `test`: adding missing tests, refactoring tests; no production code change
 - `chore`: update build scripts, etc; no production code change
 
-References:
+## References
 
 - https://www.conventionalcommits.org/
 - https://seesparkbox.com/foundry/semantic_commit_messages
-- http://karma-runner.github.io/1.0/dev/git-commit-msg.html
