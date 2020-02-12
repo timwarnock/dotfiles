@@ -4,8 +4,6 @@ Because I keep forgetting to use these, here is a sensible commit message conven
 
 ```
 <type>[optional scope]: <description>
-[optional body]
-[optional footer(s)]
 ```
 
 
@@ -28,8 +26,7 @@ fix(search): change case, Foo not FOO
 test(search): add additional Foo tests
 chore(search): add CI deployment targets
 feat: add MAB search algorithm chooser
-refactor!: remove MAB, set Foo as default
-BREAKING CHANGE: MAB support is disabled
+refactor: breaking change, remove MAB and set Foo as default
 docs(search): add README for Foo search
 ```
 
