@@ -23,6 +23,11 @@ command_exists () {
     type "$1" &> /dev/null ;
 }
 
+# get the env variables for a different process (pid)
+env_pid() {
+  xargs -0 bash -c 'printf "export %q\n" "$@"' -- < /proc/$1/environ
+}
+
 # manual version of pgrep
 if ! command_exists pgrep ; then
   function pgrep { ps -ef | grep "$*" | grep -v grep; }
@@ -169,12 +174,6 @@ function _tunnel() {
 if [ -e ~/.bashrc_local ]; then
   . ~/.bashrc_local
 fi
-
-
-# universal screen
-#if [ "$TERM" != "screen" ]; then
-#  screen -xR
-#fi
 
 
 ## set window title
