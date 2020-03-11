@@ -20,12 +20,12 @@ export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
 # check if a command exists (similar to command -v)
 command_exists () {
-    type "$1" &> /dev/null ;
+  type "$1" &> /dev/null ;
 }
 
 # get the env variables for a different process (pid)
 env_pid() {
-  xargs -0 bash -c 'printf "export %q\n" "$@"' -- < /proc/$1/environ
+  xargs -0 bash -c 'printf "%q\n" "$@"' -- < /proc/$1/environ
 }
 
 # manual version of pgrep
