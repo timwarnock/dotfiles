@@ -38,25 +38,51 @@ function print_help() {
 "
 }
 
-KEY_IN="Off"
+KEY_IN=0
 IFS=''
 while read -rsn1 input; do
   #
   # toggle mouse and keyboard mode
-  case "$input" in
-  $'\e') if [ "$KEY_IN" = "On" ]; then
-           KEY_IN="Off"
-           echo "MOUSE mode"
-         else
-           KEY_IN="On"
-           echo "KEYBOARD mode"
-         fi
-     continue
-     ;;
-  esac
+  if [ "$input" = $'\e' ]; then
+    read -rs -t.001 -n2 SEQ
+    case "$SEQ" in
+        ('[1') 
+            read -rsn1 null_input
+            KEY_IN=$((1-KEY_IN))
+            if [ $KEY_IN -eq 1 ]; then
+              echo "KEYBOARD MODE"
+            else
+              echo "MOUSE MODE"
+            fi
+            ;;
+        ('[A') xdotool key Up ;;
+        ('[B') xdotool key Down ;;
+        ('[C') xdotool key Right ;;
+        ('[D') xdotool key Left ;;
+        (*)
+            KEY_IN=$((1-KEY_IN))
+            if [ $KEY_IN -eq 1 ]; then
+              echo "KEYBOARD MODE"
+            else
+              echo "MOUSE MODE"
+            fi
+            ;;
+    esac
+ # fi
+ # case "$input" in
+ # $'\e') if [ "$KEY_IN" = "On" ]; then
+ #          KEY_IN="Off"
+ #          echo "MOUSE mode"
+ #        else
+ #          KEY_IN="On"
+ #          echo "KEYBOARD mode"
+ #        fi
+ #    continue
+ #    ;;
+ # esac
   #
   # keyboard mode
-  if [ "$KEY_IN" = "On" ]; then
+  elif [ $KEY_IN -eq 1 ]; then
   case "$input" in
   $'\x7f') xdotool key BackSpace ;;
   $' ')  xdotool key space ;;

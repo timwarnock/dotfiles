@@ -191,7 +191,7 @@ if [ "$TERM" = "screen" ]; then
 	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
 	  case "$BASH_COMMAND" in
 		*\033]0*);;
-		"true")
+		"true"|"bash")
             if [ ${#HPWD} -ge 20 ]; then HPWD='..'${HPWD:${#HPWD}-17:${#HPWD}}; fi
 			printf '\ek%s\e\\' "$HPWD:"
 			;;
@@ -205,5 +205,4 @@ if [ "$TERM" = "screen" ]; then
 	}
 	trap set_screen_window DEBUG
 fi
-
 
