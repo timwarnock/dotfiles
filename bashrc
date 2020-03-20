@@ -35,7 +35,7 @@ fi
 
 # mysql prompt
 export MYSQL_PS1='\d> '
-function mysqle() { mysql --defaults-group-suffix=$1 --password; }
+function mysqle() { mysql --defaults-group-suffix=$1 --password "${@:2}"; }
 
 # mysql debug (localhost)
 function msdebug() {
