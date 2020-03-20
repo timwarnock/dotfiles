@@ -1,4 +1,4 @@
-# MySQL CLI
+## MySQL CLI
 
 Typically, you would use `mysql` client cli as follows,
 ```
