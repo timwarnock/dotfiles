@@ -47,6 +47,11 @@ function msdebug() {
 # Python
 export PYTHONSTARTUP=~/.pythonstartup
 
+# parse git branch (used in cursor)
+which-git-branch() {
+ git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
+}
+
 # set smiley cursor
 PScBLK="\[\033[01;30m\]"
 PScRED="\[\033[0;31m\]"
@@ -57,7 +62,7 @@ PScPURP="\[\033[01;35m\]"
 PScW="\[\033[01;37m\]"
 PScEND="\[\033[0m\]"
 smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
-export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND $PScW\$(smiley)$PScEND "
+export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND$PScRED\$(which-git-branch)$PScEND $PScW\$(smiley)$PScEND "
 
 # svn
 export SVN_EDITOR=vim
