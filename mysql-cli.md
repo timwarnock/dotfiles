@@ -44,9 +44,9 @@ database = superdb
 user = bob
 ```
 
-As long as you prefix the section with "client", then this will allow you to create as many different sections as you need (for different apps, different environments, whatever).
+You must prefix each section with "client", and this will allow you to manage as many different databases as you need (for different apps, different environments, whatever).
 
-To connect, just use the shell function from earlier,
+To connect, just use the shell function from earlier, as follows,
 
 ```
 $ mysqle superdb
