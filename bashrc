@@ -47,22 +47,46 @@ function msdebug() {
 # Python
 export PYTHONSTARTUP=~/.pythonstartup
 
-# parse git branch (used in cursor)
-which-git-branch() {
- git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
-}
-
 # set smiley cursor
-PScBLK="\[\033[01;30m\]"
-PScRED="\[\033[0;31m\]"
-PScDRED="\[\033[01;31m\]"
-PScBLU="\[\033[00;34m\]"
-PScDBLU="\[\033[01;34m\]"
-PScPURP="\[\033[01;35m\]"
-PScW="\[\033[01;37m\]"
-PScEND="\[\033[0m\]"
-smiley () { if [ $? == 0 ]; then echo ':)'; else echo '!oops :('; fi; }
-export PS1="$PScDBLU\u$PScEND$PScBLK@$PScEND$PScBLU""\h$PScEND$PScBLK:\w$PScEND$PScRED\$(which-git-branch)$PScEND $PScW\$(smiley)$PScEND "
+txtblk='\e[0;30m'   # Black - Regular
+txtred='\e[0;31m'   # Red
+txtdred='\e[01;31m' # Dark Red
+txtgrn='\e[0;32m'   # Green
+txtylw='\e[0;33m'   # Yellow
+txtblu='\e[0;34m'   # Blue
+txtpur='\e[0;35m'   # Purple
+txtcyn='\e[0;36m'   # Cyan
+txtwht='\e[0;37m'   # White
+bldblk='\e[1;30m'   # Black - Bold
+bldred='\e[1;31m'   # Red
+bldgrn='\e[1;32m'   # Green
+bldylw='\e[1;33m'   # Yellow
+bldblu='\e[1;34m'   # Blue
+bldpur='\e[1;35m'   # Purple
+bldcyn='\e[1;36m'   # Cyan
+bldwht='\e[1;37m'   # White
+txtrst='\e[0m'      # Text Reset
+smiley() { 
+  if [ $? == 0 ]; then
+    printf "$bldwht:)$txtrst"
+  else 
+    printf "$bldred!oops :($txtrst"
+  fi
+}
+which-git-branch() {
+  PRE_RET=$?
+  GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  if [ "$GIT_BRANCH" == "" ]; then
+    printf "-"
+  elif [[ $GIT_BRANCH = master* ]]; then
+    printf "$bldblu[$txtblu$GIT_BRANCH$bldblu]$txtrst"
+  else
+    printf "$bldred[$txtred$GIT_BRANCH$bldred]$txtrst"
+  fi   
+  return $PRE_RET
+}
+export PS1="$bldblu\u$txtrst$txtblk@$txtrst$txtblu""\h$txtrst$txtblk:\w$txtrst$txtred\$(which-git-branch)$txtrst \$(smiley)$txtrst "
+#export PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
