@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+: ${DISPLAY:=":0"}
+export DISPLAY
+export PATH=$PATH:~/bin
+export XDG_RUNTIME_DIR=/run/user/`id -u`
+
 
 ##
 ## LEFT | RIGHT | CENTER | SET | RESET
