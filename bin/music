@@ -20,9 +20,9 @@ Z_OPT=" -Z "
 usage() { echo "Usage: [options] [playlist-file|command]" && grep " .)\ #" $0;
   echo "  COMMANDS"
   cat << EOU
-    p|play|pause
+    p|play|pause|on
       toggle play and pause
-    k|kill|s|stop|end|x|exit
+    k|kill|s|stop|end|x|off|exit
       stops the music and exits the player
     n|next
       go to next track
@@ -89,9 +89,9 @@ else
   case $playlist_file in
    -|0|+)
      echo "Got it!" ;;
-   p|play|pause)
+   p|play|pause|on)
      vlcrc pause ;;
-   k|kill|s|stop|end|x|exit)
+   k|kill|s|stop|end|x|exit|off)
      pkill vlc ;;
    n|next)
      vlcrc next ;;
