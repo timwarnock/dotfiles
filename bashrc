@@ -85,7 +85,7 @@ which-git-branch() {
   fi   
   return $PRE_RET
 }
-export PS1="$bldblu\u$txtrst$txtblk@$txtrst$txtblu""\h$txtrst$txtblk:\w$txtrst$txtred\$(which-git-branch)$txtrst \$(smiley)$txtrst "
+export PS1="$bldblu\u$bldblk@$txtblu\h$bldblk:\w \$(which-git-branch) \$(smiley)$txtrst "
 #export PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
 
 # svn
