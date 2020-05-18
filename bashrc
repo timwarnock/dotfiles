@@ -19,7 +19,7 @@ set -o vi
 export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
 # check if a command exists (similar to command -v)
-command_exists () {
+command_exists() {
   type "$1" &> /dev/null ;
 }
 
@@ -48,24 +48,23 @@ function msdebug() {
 export PYTHONSTARTUP=~/.pythonstartup
 
 # set smiley cursor
-txtblk='\e[0;30m'   # Black - Regular
-txtred='\e[0;31m'   # Red
-txtdred='\e[01;31m' # Dark Red
-txtgrn='\e[0;32m'   # Green
-txtylw='\e[0;33m'   # Yellow
-txtblu='\e[0;34m'   # Blue
-txtpur='\e[0;35m'   # Purple
-txtcyn='\e[0;36m'   # Cyan
-txtwht='\e[0;37m'   # White
-bldblk='\e[1;30m'   # Black - Bold
-bldred='\e[1;31m'   # Red
-bldgrn='\e[1;32m'   # Green
-bldylw='\e[1;33m'   # Yellow
-bldblu='\e[1;34m'   # Blue
-bldpur='\e[1;35m'   # Purple
-bldcyn='\e[1;36m'   # Cyan
-bldwht='\e[1;37m'   # White
-txtrst='\e[0m'      # Text Reset
+txtblk='\001\033[0;30m\002'   # Black - Regular
+txtred='\001\033[0;31m\002'   # Red
+txtgrn='\001\033[0;32m\002'   # Green
+txtylw='\001\033[0;33m\002'   # Yellow
+txtblu='\001\033[0;34m\002'   # Blue
+txtpur='\001\033[0;35m\002'   # Purple
+txtcyn='\001\033[0;36m\002'   # Cyan
+txtwht='\001\033[0;37m\002'   # White
+bldblk='\001\033[1;30m\002'   # Black - Bold
+bldred='\001\033[1;31m\002'   # Red
+bldgrn='\001\033[1;32m\002'   # Green
+bldylw='\001\033[1;33m\002'   # Yellow
+bldblu='\001\033[1;34m\002'   # Blue
+bldpur='\001\033[1;35m\002'   # Purple
+bldcyn='\001\033[1;36m\002'   # Cyan
+bldwht='\001\033[1;37m\002'   # White
+txtrst='\001\033[0m\002'      # Text Reset
 smiley() { 
   if [ $? == 0 ]; then
     printf "$bldwht:)$txtrst"
@@ -85,8 +84,8 @@ which-git-branch() {
   fi   
   return $PRE_RET
 }
-export PS1="$bldblu\u$bldblk@$txtblu\h$bldblk:\w \$(which-git-branch) \$(smiley)$txtrst "
-#export PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
+#PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
+PS1="$bldblu\u$bldblk@$txtblu\h$bldblk:\w \$(which-git-branch) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
