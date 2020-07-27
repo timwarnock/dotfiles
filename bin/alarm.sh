@@ -46,8 +46,8 @@ fi
 STILL_RUNNING=1
 CURR_VOL=20
 VOL30_TS=$(( $START_TS + $WAIT_SEC/4 ))
-VOL40_TS=$(( $START_TS + $WAIT_SEC/3 ))
-VOL50_TS=$(( $START_TS + $WAIT_SEC/2 ))
+VOL50_TS=$(( $START_TS + $WAIT_SEC/3 ))
+VOL70_TS=$(( $START_TS + $WAIT_SEC/2 ))
 END_TS=$(( $START_TS + $WAIT_SEC ))
 while (( $STILL_RUNNING == 1 )); do
   NOW_TS=`date +"%s"`
@@ -59,17 +59,17 @@ while (( $STILL_RUNNING == 1 )); do
     echo "Max time reached, sounding alarm and exiting"
     display.sh on
     pkill vlc
-    volume.sh 60
+    volume.sh 70
     nohup vlc -Z $ALARM_FILE >/dev/null 2>&1 &
     STILL_RUNNING=0
-  elif (( $NOW_TS >= $VOL50_TS && $CURR_VOL < 50 )); then
+  elif (( $NOW_TS >= $VOL70_TS && $CURR_VOL < 70 )); then
     echo "No activity in $(( $WAIT_SEC/2 / 60 )) minutes, raising volume"
+    CURR_VOL=70
+    volume.sh 70
+  elif (( $NOW_TS >= $VOL50_TS && $CURR_VOL < 50 )); then
+    echo "No activity in $(( $WAIT_SEC/3 / 60 )) minutes, raising volume"
     CURR_VOL=50
     volume.sh 50
-  elif (( $NOW_TS >= $VOL40_TS && $CURR_VOL < 40 )); then
-    echo "No activity in $(( $WAIT_SEC/3 / 60 )) minutes, raising volume"
-    CURR_VOL=40
-    volume.sh 40
   elif (( $NOW_TS >= $VOL30_TS && $CURR_VOL < 30 )); then
     echo "No activity in $(( $WAIT_SEC/4 / 60 )) minutes, raising volume"
     CURR_VOL=30
