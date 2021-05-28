@@ -125,6 +125,7 @@ alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }
 alias tags='ctags -R -f ~/.tags -h .h.H.hh.hpp.hxx.h++.inc.def --langmap=php:.php.php3.php4.phtml.inc'
 alias sqlplus='rlwrap sqlplus'
 alias prettyjson='python -m json.tool'
+alias tmuxa='tmux attach'
 
 
 # user functions
