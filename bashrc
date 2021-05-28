@@ -47,7 +47,7 @@ function msdebug() {
 # Python
 export PYTHONSTARTUP=~/.pythonstartup
 
-# set smiley cursor
+# set cursor
 txtblk='\001\033[0;30m\002'   # Black - Regular
 txtred='\001\033[0;31m\002'   # Red
 txtgrn='\001\033[0;32m\002'   # Green
@@ -85,7 +85,7 @@ which-git-branch() {
   return $PRE_RET
 }
 #PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
-PS1="$bldblu\u$bldblk@$txtblu\h$bldblk:\w \$(which-git-branch) \$(smiley)$txtrst "
+PS1="$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(which-git-branch) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
