@@ -56,6 +56,7 @@ txtblu='\001\033[0;34m\002'   # Blue
 txtpur='\001\033[0;35m\002'   # Purple
 txtcyn='\001\033[0;36m\002'   # Cyan
 txtwht='\001\033[0;37m\002'   # White
+txtgry='\001\033[0;90m\002'   # Grey
 bldblk='\001\033[1;30m\002'   # Black - Bold
 bldred='\001\033[1;31m\002'   # Red
 bldgrn='\001\033[1;32m\002'   # Green
@@ -75,17 +76,33 @@ smiley() {
 which-git-branch() {
   PRE_RET=$?
   GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  printf "$GIT_BRANCH"
+  return $PRE_RET
+}
+git-branch-fmt() {
+  PRE_RET=$?
+  #GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  GIT_BRANCH=$(which-git-branch)
   if [ "$GIT_BRANCH" == "" ]; then
     printf "-"
-  elif [[ $GIT_BRANCH = master* ]]; then
+  elif [[ $GIT_BRANCH = master* || $GIT_BRANCH = main* ]]; then
     printf "$bldblu[$txtblu$GIT_BRANCH$bldblu]$txtrst"
   else
     printf "$bldred[$txtred$GIT_BRANCH$bldred]$txtrst"
   fi   
   return $PRE_RET
 }
-#PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
-PS1="$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(which-git-branch) \$(smiley)$txtrst "
+which-venv() {
+  PRE_RET=$?
+  VENV_NAME=""
+  if hash pyenv 2>/dev/null && test -f ".python-version"; then
+    VENV_NAME="($(pyenv version-name)) "
+  fi
+  printf "$txtgry$VENV_NAME$txtrst"
+  return $PRE_RET
+}
+#PS1="$bldblk\w \$(git-branch-fmt) \$(smiley)$txtrst "
+PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
@@ -103,11 +120,12 @@ else
   fi
 fi
 alias l="ls $colorflag"
-alias ll="ls -l $colorflag"
-alias lll="ls -la $colorflag"
+alias ll="ls -lh $colorflag"
+alias lll="ls -lah $colorflag"
 
 # aliases
 alias vi=vim
+alias c=clear
 alias d='dirs -v'
 alias pd='pushd'
 alias pd0='pushd +0 >/dev/null && dirs -v'
@@ -139,7 +157,31 @@ function datsize {
     fi
 }
 
+
+##
+# git functions
+##
+function git-master-or-main {
+  DEFAULT_BRANCH=master
+  git rev-parse --verify $DEFAULT_BRANCH >/dev/null 2>&1
+  if [ $? != 0 ]; then
+    DEFAULT_BRANCH=main
+  fi
+  echo $DEFAULT_BRANCH
+}
+function git-clean-branches {
+  git checkout $(git-master-or-main) && \
+  git pull && \
+  git remote prune origin && \
+  git branch --merged | egrep -v "(^\*|master|main)" | xargs git branch -d 
+}
+function git-pr-push {
+  git push -u origin $(which-git-branch)
+}
+
+##
 # ssh agent -- for shared home directory across hosts
+#
 SSH_ENV=$HOME/.ssh/.environment.`hostname`
 SSH_LOG=$HOME/.ssh/.log.`hostname`
 function start_agent {
