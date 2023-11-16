@@ -3,6 +3,7 @@
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
 export LANG=en_US.UTF-8
+export HOSTNAME=$(hostname)
 
 # turn off trap DEBUG (turned on at the end for screen window title)
 trap "" DEBUG
@@ -16,7 +17,7 @@ trap "" DEBUG
 set -o vi
 
 # path
-export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
+export PATH=$PATH:.:/usr/local/bin:/usr/local/sbin:~/bin
 
 # check if a command exists (similar to command -v)
 command_exists() {
@@ -46,6 +47,7 @@ function msdebug() {
 
 # Python
 export PYTHONSTARTUP=~/.pythonstartup
+export PYTHONPATH=.:$PYTHONPATH
 
 # set cursor
 txtblk='\001\033[0;30m\002'   # Black - Regular
@@ -73,6 +75,11 @@ smiley() {
     printf "$bldred!oops :($txtrst"
   fi
 }
+
+## git aliases
+git config --global alias.hub \
+        '!open "$(git ls-remote --get-url | sed "s|git@github.com:\(.*\)$|https://github.com/\1|" | sed "s|\.git$||")";'
+
 which-git-branch() {
   PRE_RET=$?
   GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
@@ -102,7 +109,8 @@ which-venv() {
   return $PRE_RET
 }
 #PS1="$bldblk\w \$(git-branch-fmt) \$(smiley)$txtrst "
-PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
+#PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
+PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\$HOSTNAME$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
@@ -110,13 +118,13 @@ alias svne='echo svn propedit svn:externals; svn propedit svn:externals'
 alias svnu='echo svn up --ignore-externals; svn up --ignore-externals'
 
 # ls aliases
-ls --color=tty >/dev/null 2>&1
+ls -G >/dev/null 2>&1
 if [ $? == 0 ]; then
-  colorflag='--color=tty'
+  colorflag='-G'
 else
-  ls -G >/dev/null 2>&1
+  ls --color=tty >/dev/null 2>&1
   if [ $? == 0 ]; then
-    colorflag='-G'
+    colorflag='--color=tty'
   fi
 fi
 alias l="ls $colorflag"
@@ -159,8 +167,11 @@ function datsize {
 
 
 ##
-# git functions
+# git 
 ##
+function git-default-branch {
+  echo $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+}
 function git-master-or-main {
   DEFAULT_BRANCH=master
   git rev-parse --verify $DEFAULT_BRANCH >/dev/null 2>&1
@@ -170,13 +181,18 @@ function git-master-or-main {
   echo $DEFAULT_BRANCH
 }
 function git-clean-branches {
-  git checkout $(git-master-or-main) && \
+  git checkout $(git-default-branch) && \
   git pull && \
-  git remote prune origin && \
-  git branch --merged | egrep -v "(^\*|master|main)" | xargs git branch -d 
+  git branch --merged | egrep -v $(git-default-branch) | xargs git branch -D && \
+  git remote prune origin
 }
 function git-pr-push {
   git push -u origin $(which-git-branch)
+}
+function git-all() {
+    git add .
+    git commit -a -m "$1"
+    git push
 }
 
 ##
@@ -255,7 +271,7 @@ settitle() {
 
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
-if [ "$TERM" = "screen" ]; then
+if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" ]; then
 	export PROMPT_COMMAND='true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
@@ -276,4 +292,9 @@ if [ "$TERM" = "screen" ]; then
 	}
 	trap set_screen_window DEBUG
 fi
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
