@@ -68,9 +68,12 @@ bldpur='\001\033[1;35m\002'   # Purple
 bldcyn='\001\033[1;36m\002'   # Cyan
 bldwht='\001\033[1;37m\002'   # White
 txtrst='\001\033[0m\002'      # Text Reset
+txtorg='\001\033[38;5;208m\002'   # Bitcoin Orange - Regular
+bldorg='\001\033[1;38;5;208m\002'   # Bitcoin Orange - Bold
+btc_symbol="₿"
 smiley() { 
   if [ $? == 0 ]; then
-    printf "$bldwht:)$txtrst"
+    printf "$txtorg${btc_symbol}$txtrst"
   else 
     printf "$bldred!oops :($txtrst"
   fi
@@ -271,7 +274,7 @@ settitle() {
 
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
-if [ "$TERM" = "screen" -o "$TERM" = "tmux-256color" ]; then
+if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux-256color" ]; then
 	export PROMPT_COMMAND='true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`

@@ -113,3 +113,6 @@ if &term == "screen" || &term == "screen-256color"
 endif
 autocmd TabEnter,WinEnter,BufReadPost,FileReadPost,BufNewFile * let &titlestring = 'vim(' . expand("%:t") . ')'
 
+" pbcopy from selection?
+set clipboard=unnamed
+
