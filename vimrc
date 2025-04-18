@@ -104,7 +104,7 @@ if version >= 700
 endif
 
 " screen title
-if &term == "screen"
+if &term == "screen" || &term == "screen-256color"
   let &titlestring = "vim(" . expand("%:t") . ")"
   set t_ts=k 
   set t_fs=\
