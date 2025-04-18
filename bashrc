@@ -3,6 +3,7 @@
 # environment specific settings (such as ssh tunnel configs) I put in .bashrc_local
 #
 export LANG=en_US.UTF-8
+export HOSTNAME=$(hostname)
 
 # turn off trap DEBUG (turned on at the end for screen window title)
 trap "" DEBUG
@@ -16,7 +17,7 @@ trap "" DEBUG
 set -o vi
 
 # path
-export PATH=.:/usr/local/bin:/usr/local/sbin:~/bin:$PATH
+export PATH=$PATH:.:/usr/local/bin:/usr/local/sbin:~/bin
 
 # check if a command exists (similar to command -v)
 command_exists() {
@@ -46,8 +47,9 @@ function msdebug() {
 
 # Python
 export PYTHONSTARTUP=~/.pythonstartup
+export PYTHONPATH=.:$PYTHONPATH
 
-# set smiley cursor
+# set cursor
 txtblk='\001\033[0;30m\002'   # Black - Regular
 txtred='\001\033[0;31m\002'   # Red
 txtgrn='\001\033[0;32m\002'   # Green
@@ -56,6 +58,7 @@ txtblu='\001\033[0;34m\002'   # Blue
 txtpur='\001\033[0;35m\002'   # Purple
 txtcyn='\001\033[0;36m\002'   # Cyan
 txtwht='\001\033[0;37m\002'   # White
+txtgry='\001\033[0;90m\002'   # Grey
 bldblk='\001\033[1;30m\002'   # Black - Bold
 bldred='\001\033[1;31m\002'   # Red
 bldgrn='\001\033[1;32m\002'   # Green
@@ -72,20 +75,42 @@ smiley() {
     printf "$bldred!oops :($txtrst"
   fi
 }
+
+## git aliases
+git config --global alias.hub \
+        '!open "$(git ls-remote --get-url | sed "s|git@github.com:\(.*\)$|https://github.com/\1|" | sed "s|\.git$||")";'
+
 which-git-branch() {
   PRE_RET=$?
   GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  printf "$GIT_BRANCH"
+  return $PRE_RET
+}
+git-branch-fmt() {
+  PRE_RET=$?
+  #GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  GIT_BRANCH=$(which-git-branch)
   if [ "$GIT_BRANCH" == "" ]; then
     printf "-"
-  elif [[ $GIT_BRANCH = master* ]]; then
+  elif [[ $GIT_BRANCH = master* || $GIT_BRANCH = main* ]]; then
     printf "$bldblu[$txtblu$GIT_BRANCH$bldblu]$txtrst"
   else
     printf "$bldred[$txtred$GIT_BRANCH$bldred]$txtrst"
   fi   
   return $PRE_RET
 }
-#PS1="$bldblk\w \$(which-git-branch) \$(smiley)$txtrst "
-PS1="$bldblu\u$bldblk@$txtblu\h$bldblk:\w \$(which-git-branch) \$(smiley)$txtrst "
+which-venv() {
+  PRE_RET=$?
+  VENV_NAME=""
+  if hash pyenv 2>/dev/null && test -f ".python-version"; then
+    VENV_NAME="($(pyenv version-name)) "
+  fi
+  printf "$txtgry$VENV_NAME$txtrst"
+  return $PRE_RET
+}
+#PS1="$bldblk\w \$(git-branch-fmt) \$(smiley)$txtrst "
+#PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\h$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
+PS1="\$(which-venv)$bldblu\u$txtrst@$txtblu\$HOSTNAME$txtwht:\w \$(git-branch-fmt) \$(smiley)$txtrst "
 
 # svn
 export SVN_EDITOR=vim
@@ -93,21 +118,22 @@ alias svne='echo svn propedit svn:externals; svn propedit svn:externals'
 alias svnu='echo svn up --ignore-externals; svn up --ignore-externals'
 
 # ls aliases
-ls --color=tty >/dev/null 2>&1
+ls -G >/dev/null 2>&1
 if [ $? == 0 ]; then
-  colorflag='--color=tty'
+  colorflag='-G'
 else
-  ls -G >/dev/null 2>&1
+  ls --color=tty >/dev/null 2>&1
   if [ $? == 0 ]; then
-    colorflag='-G'
+    colorflag='--color=tty'
   fi
 fi
 alias l="ls $colorflag"
-alias ll="ls -l $colorflag"
-alias lll="ls -la $colorflag"
+alias ll="ls -lh $colorflag"
+alias lll="ls -lah $colorflag"
 
 # aliases
 alias vi=vim
+alias c=clear
 alias d='dirs -v'
 alias pd='pushd'
 alias pd0='pushd +0 >/dev/null && dirs -v'
@@ -125,6 +151,7 @@ alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }
 alias tags='ctags -R -f ~/.tags -h .h.H.hh.hpp.hxx.h++.inc.def --langmap=php:.php.php3.php4.phtml.inc'
 alias sqlplus='rlwrap sqlplus'
 alias prettyjson='python -m json.tool'
+alias tmuxa='tmux attach'
 
 
 # user functions
@@ -138,7 +165,39 @@ function datsize {
     fi
 }
 
+
+##
+# git 
+##
+function git-default-branch {
+  echo $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+}
+function git-master-or-main {
+  DEFAULT_BRANCH=master
+  git rev-parse --verify $DEFAULT_BRANCH >/dev/null 2>&1
+  if [ $? != 0 ]; then
+    DEFAULT_BRANCH=main
+  fi
+  echo $DEFAULT_BRANCH
+}
+function git-clean-branches {
+  git checkout $(git-default-branch) && \
+  git pull && \
+  git branch --merged | egrep -v $(git-default-branch) | xargs git branch -D && \
+  git remote prune origin
+}
+function git-pr-push {
+  git push -u origin $(which-git-branch)
+}
+function git-all() {
+    git add .
+    git commit -a -m "$1"
+    git push
+}
+
+##
 # ssh agent -- for shared home directory across hosts
+#
 SSH_ENV=$HOME/.ssh/.environment.`hostname`
 SSH_LOG=$HOME/.ssh/.log.`hostname`
 function start_agent {
@@ -212,7 +271,7 @@ settitle() {
 
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
-if [ "$TERM" = "screen" ]; then
+if [ "$TERM" = "screen" -o "$TERM" = "tmux-256color" ]; then
 	export PROMPT_COMMAND='true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
@@ -234,3 +293,4 @@ if [ "$TERM" = "screen" ]; then
 	trap set_screen_window DEBUG
 fi
 
+clear

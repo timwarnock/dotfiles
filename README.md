@@ -2,5 +2,5 @@
 Useful dotfiles, random scripts, and helpful tips
 
 ## Helpful Tips
-- [Conventional Commits](conventional-commits.md)
-- [MySQL CLI](mysql-cli.md)
+- [Conventional Commits](docs/conventional-commits.md)
+- [MySQL CLI](docs/mysql-cli.md)
