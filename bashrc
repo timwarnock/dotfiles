@@ -17,7 +17,7 @@ trap "" DEBUG
 set -o vi
 
 # path
-export PATH=$PATH:.:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH=$HOME/.local/bin:$PATH:.:/usr/local/bin:/usr/local/sbin:~/bin
 
 # check if a command exists (similar to command -v)
 command_exists() {
@@ -82,10 +82,22 @@ smiley() {
 ## git aliases
 git config --global alias.hub \
         '!open "$(git ls-remote --get-url | sed "s|git@github.com:\(.*\)$|https://github.com/\1|" | sed "s|\.git$||")";'
-
+alias gwt='git worktree list'
+alias gwtl='git worktree list'
+alias gwta='git worktree add'
+alias gwtr='git worktree remove'
+alias gwtp='git worktree prune'
+gwtb() {
+    # Usage: gwtb feature-name [base-branch]
+    # Creates ../repo-feature-name with new branch feature-name
+    local branch=$1
+    local base=${2:-main}
+    local repo=$(basename $(pwd))
+    git worktree add -b "$branch" "../${repo}-${branch}" "$base"
+}
 which-git-branch() {
   PRE_RET=$?
-  GIT_BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
   printf "$GIT_BRANCH"
   return $PRE_RET
 }
@@ -154,7 +166,7 @@ alias ip="/sbin/ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{ print \$2 }
 alias tags='ctags -R -f ~/.tags -h .h.H.hh.hpp.hxx.h++.inc.def --langmap=php:.php.php3.php4.phtml.inc'
 alias sqlplus='rlwrap sqlplus'
 alias prettyjson='python -m json.tool'
-alias tmuxa='tmux attach'
+alias tmuxa='tmux new-session -A -s main'
 
 
 # user functions
@@ -184,9 +196,13 @@ function git-master-or-main {
   echo $DEFAULT_BRANCH
 }
 function git-clean-branches {
-  git checkout $(git-default-branch) && \
-  git pull && \
-  git branch --merged | egrep -v $(git-default-branch) | xargs git branch -D && \
+  git checkout "$(git-default-branch)" &&
+  git pull &&
+  git branch --merged |
+    sed 's/^[* +]*//' |
+    grep -v "^$(git-default-branch)$" |
+    grep -v -F "$(git worktree list --porcelain | sed -n 's,^branch refs/heads/,,p')" |
+    xargs git branch -D
   git remote prune origin
 }
 function git-pr-push {
@@ -261,6 +277,27 @@ function _tunnel() {
 }
 
 
+# tmux: send a command to a pane by @persona name (current window only)
+tmux-send() {
+    if [ -z "$TMUX" ]; then
+        printf 'Not in a tmux session\n' >&2
+        return 1
+    fi
+    target="$1"
+    shift
+    if [ -z "$target" ] || [ $# -eq 0 ]; then
+        printf 'Usage: tmux-send <persona> <message>\n' >&2
+        return 1
+    fi
+    pane_id=$(tmux list-panes -F '#{pane_id} #{@persona}' | grep "$target" | head -1 | cut -d ' ' -f1)
+    if [ -n "$pane_id" ]; then
+        tmux send-keys -t "$pane_id" "$*" Enter
+    else
+        printf 'No pane found for: %s\n' "$target" >&2
+        return 1
+    fi
+}
+
 # load any local settings (specific to environment)
 if [ -e ~/.bashrc_local ]; then
   . ~/.bashrc_local
@@ -275,7 +312,7 @@ settitle() {
 # Show the current directory AND running command in the screen window title
 # inspired from http://www.davidpashley.com/articles/xterm-titles-with-bash.html
 if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux-256color" ]; then
-	export PROMPT_COMMAND='true'
+	export PROMPT_COMMAND='(tmux set-option -p -t "$TMUX_PANE" @persona "" 2>/dev/null &); true'
 	set_screen_window() {
 	  HPWD=`basename "$PWD"`
 	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
@@ -296,4 +333,3 @@ if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux-256col
 	trap set_screen_window DEBUG
 fi
 
-clear
