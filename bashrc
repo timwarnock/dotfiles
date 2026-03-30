@@ -133,15 +133,10 @@ alias svne='echo svn propedit svn:externals; svn propedit svn:externals'
 alias svnu='echo svn up --ignore-externals; svn up --ignore-externals'
 
 # ls aliases
-ls -G >/dev/null 2>&1
-if [ $? == 0 ]; then
-  colorflag='-G'
-else
-  ls --color=tty >/dev/null 2>&1
-  if [ $? == 0 ]; then
-    colorflag='--color=tty'
-  fi
-fi
+case "$(uname)" in
+  Darwin|FreeBSD) colorflag='-G' ;;
+  *)              colorflag='--color=auto' ;;
+esac
 alias l="ls $colorflag"
 alias ll="ls -lh $colorflag"
 alias lll="ls -lah $colorflag"
@@ -277,7 +272,7 @@ function _tunnel() {
 }
 
 
-# tmux: send a command to a pane by @persona name (current window only)
+# tmux: send a command to a pane by @persona name (caller's window)
 tmux-send() {
     if [ -z "$TMUX" ]; then
         printf 'Not in a tmux session\n' >&2
@@ -289,7 +284,7 @@ tmux-send() {
         printf 'Usage: tmux-send <persona> <message>\n' >&2
         return 1
     fi
-    pane_id=$(tmux list-panes -F '#{pane_id} #{@persona}' | grep "$target" | head -1 | cut -d ' ' -f1)
+    pane_id=$(tmux list-panes -t "${TMUX_PANE}" -F '#{pane_id} #{@persona}' | grep "$target" | head -1 | cut -d ' ' -f1)
     if [ -n "$pane_id" ]; then
         tmux send-keys -t "$pane_id" "$*" Enter
     else
