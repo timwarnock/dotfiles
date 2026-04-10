@@ -224,7 +224,7 @@ function start_agent {
 }
 
 ## ssh-agent
-if [ -e "$SSH_AUTH_SOCK" ]; then
+if [ -e "$SSH_AUTH_SOCK" -a ! "$SSH_AUTH_SOCK" = "/run/user/1000/gnupg/S.gpg-agent.ssh" ]; then
   echo "`date` Using ${SSH_AUTH_SOCK}" > $SSH_LOG
 elif [ -f "${SSH_ENV}" ]; then
   echo "`date` Using ${SSH_ENV}" > $SSH_LOG
