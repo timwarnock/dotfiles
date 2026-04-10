@@ -286,7 +286,8 @@ tmux-send() {
     fi
     pane_id=$(tmux list-panes -t "${TMUX_PANE}" -F '#{pane_id} #{@persona}' | grep "$target" | head -1 | cut -d ' ' -f1)
     if [ -n "$pane_id" ]; then
-        tmux send-keys -t "$pane_id" "$*" Enter
+        tmux send-keys -t "$pane_id" -l -- "$*"
+        tmux send-keys -t "$pane_id" Enter
     else
         printf 'No pane found for: %s\n' "$target" >&2
         return 1
