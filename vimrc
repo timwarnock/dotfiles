@@ -21,9 +21,16 @@ set copyindent
 set pastetoggle=<F2>
 set preserveindent
 
-" vim-plug
+" vim-plug (auto-bootstrap if missing)
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 Plug 'tomasiser/vim-code-dark'
+Plug 'preservim/nerdtree'
 call plug#end()
 
 
@@ -31,7 +38,7 @@ call plug#end()
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
-" pathogen
+" pathogen (old, commented; using vim-plug now)
 " execute pathogen#infect()
 
 "
