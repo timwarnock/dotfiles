@@ -43,8 +43,12 @@ it reports **recovery**, realign with the user before anything else.
    how to proceed — don't stall, and don't do the work yourself.
 4. **Delegate** to that worker:
    ```sh
-   sh ~/.claude/skills/team/scripts/manager/delegate-task.sh <Worker> /tmp/<task> [/tmp/<check>]
+   sh ~/.claude/skills/team/scripts/manager/delegate-task.sh [-m sonnet|opus|fable] <Worker> /tmp/<task> [/tmp/<check>]
    ```
+   Pick the model with `-m`, sized to the task: `sonnet` for a small, well-defined task
+   (config edits, mechanical changes), `fable` for a large or intricate one, and `opus` —
+   the default when `-m` is absent — for everything else. The model holds for this task
+   only; every delegation stamps its own.
    This may take a few minutes — call it with a generous Bash timeout. If it reports the
    task was **rejected**, fix the scratch and resubmit; on success the worker has it.
 

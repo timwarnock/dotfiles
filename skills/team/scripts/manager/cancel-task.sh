@@ -27,7 +27,7 @@ printf 'ABORTED\n\n\ncancelled by manager.\n' > "$target/done"
 
 # Re-instantiate the worker so it lands idle on its next get-task.
 if [ -n "${TMUX:-}" ]; then
-    sh "$internal/reinit-pane.sh" "$worker" "/team $worker" || true
+    sh "$internal/reinit-pane.sh" "$worker" opus "/team $worker" || true
 fi
 
 printf 'cancelled %s — ABORTED (archived %s-%s)\n' "$worker" "$ts" "$worker"

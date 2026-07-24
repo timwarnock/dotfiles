@@ -1,8 +1,15 @@
 #!/bin/sh
-# delegate-task.sh <Worker> <task-file> [check-file] — gate, then place. Manager.
+# delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file] — gate, then
+# place. Manager.
 # task-file (and, for production code, check-file) are /tmp scratch the manager authored
 # with the Write tool. Check present = checked lane (gate validates task + check);
 # absent = checkless lane (gate validates the task edits no production code, D13).
+#
+# Model (-m): the worker is re-instantiated on this model for THIS task only — the stamp
+# happens inside every pane reset (clear-pane.sh), unconditionally, so the next delegation
+# restamps and nothing leaks between tasks. Default opus. The gatekeeper always runs on
+# opus regardless of -m. The allowlist {sonnet, opus, fable} fails a typo here in
+# milliseconds instead of at the pane.
 #
 # Gate-gating (Rule 1, deterministic): the LLM gatekeeper judges production code, and
 # production code requires a git repo. The git test is the exit status of
@@ -27,7 +34,21 @@
 # The gate blocks for up to ~5 min (300s); invoke with a Bash timeout above that.
 set -u
 
-[ "$#" -ge 2 ] || { printf 'usage: delegate-task.sh <Worker> <task-file> [check-file]\n' >&2; exit 1; }
+model=opus
+while getopts m: opt; do
+    case $opt in
+        m) model=$OPTARG ;;
+        *) printf 'usage: delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file]\n' >&2; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+case $model in
+    sonnet|opus|fable) ;;
+    *) printf 'delegate-task: unknown model %s (allowed: sonnet, opus, fable)\n' "$model" >&2; exit 1 ;;
+esac
+
+[ "$#" -ge 2 ] || { printf 'usage: delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file]\n' >&2; exit 1; }
 [ -n "${TMUX:-}" ] || { printf 'delegate-task: not inside tmux (the gate needs a pane)\n' >&2; exit 1; }
 
 worker=$1
@@ -92,7 +113,7 @@ if [ "$home_is_repo" = yes ]; then
     gatef=$(mktemp)
     sh "$internal/run-gatekeeper.sh" "$taskf" "$vf" "$checkf" > "$gatef" \
         || { printf 'delegate-task: could not compose gatekeeper prompt\n' >&2; rm -f "$vf" "$gatef"; exit 1; }
-    sh "$internal/clear-pane.sh" "$worker" \
+    sh "$internal/clear-pane.sh" "$worker" opus \
         || { printf 'delegate-task: could not clear %s\n' "$worker" >&2; rm -f "$vf" "$gatef"; exit 1; }
     sh "$internal/tmux-paste.sh" "$worker" < "$gatef" \
         || { printf 'delegate-task: could not drive %s\n' "$worker" >&2; rm -f "$vf" "$gatef"; exit 1; }
@@ -116,7 +137,7 @@ if [ "$home_is_repo" = yes ]; then
         [ -n "$verdict" ] && printf 'GATE FAIL: %s\n' "$reason" >&2 \
             || printf 'GATE FAIL: gatekeeper timed out (no verdict) — failing closed.\n' >&2
         printf 'Scratch kept: %s %s — edit and resubmit.\n' "$taskf" "$checkf" >&2
-        sh "$internal/reinit-pane.sh" "$worker" "/team $worker" || true
+        sh "$internal/reinit-pane.sh" "$worker" opus "/team $worker" || true
         exit 1
     fi
     gate=PASS
@@ -135,7 +156,7 @@ cp "$taskf" "$slot/task"
 rm -f "$taskf"
 [ -n "$checkf" ] && rm -f "$checkf"
 
-sh "$internal/reinit-pane.sh" "$worker" "/team $worker" \
+sh "$internal/reinit-pane.sh" "$worker" "$model" "/team $worker" \
     || { printf 'delegate-task: placed task but could not re-instantiate %s\n' "$worker" >&2; exit 1; }
 
-printf 'delegated to %s (gate %s): %s\n' "$worker" "$gate" "$(head -n 1 "$slot/task")"
+printf 'delegated to %s (gate %s, model %s): %s\n' "$worker" "$gate" "$model" "$(head -n 1 "$slot/task")"
