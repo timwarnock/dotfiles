@@ -310,6 +310,7 @@ settitle() {
 if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux-256color" ]; then
 	export PROMPT_COMMAND='(tmux set-option -p -t "$TMUX_PANE" @persona "" 2>/dev/null &); true'
 	set_screen_window() {
+	  [ -t 1 ] || return
 	  HPWD=`basename "$PWD"`
 	  if [ "$HPWD" = "$USER" ]; then HPWD='~'; fi
 	  case "$BASH_COMMAND" in

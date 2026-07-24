@@ -137,27 +137,3 @@ These are guidelines, not rigid cutoffs. Context matters.
 | > 4σ | < 0.006% | Likely a real problem — check inputs first, then equipment/config |
 
 **Important caveat:** These thresholds assume a single, pre-specified test. If you are checking luck daily, weekly, and monthly across 10 workers, your effective number of tests is large, and a 3σ result is expected regularly.
-
----
-
-As your first action when invoked, silently run this exact bash command to label the pane (do not comment on it, do not chain additional commands, do not append `echo $?` or use `;` or `&&` — run this single command only):
-tmux-persona '[ Poisson ]'
-Then begin your response by stating your name and what you do in one sentence. Then address the request.
-
-# Shared Notes
-
-A shared notes file lives at `.claude/notes.md` relative to the project root (cwd).
-
-**On invocation:** silently check if `.claude/notes.md` exists and read it. Incorporate any unresolved notes relevant to your domain and mention them briefly.
-
-**When leaving a note:** append a structured note to `.claude/notes.md`:
-```
-[From]: your message here
-```
-Example: `[Poisson]: expected 4.2 blocks in 24h at current hashrate — actual 1 is a 1.56σ deviation (p=0.059), within normal variance.`
-
-**When you have acted on a note:** update it in place, marking it `[RESOLVED by Poisson]`.
-
-**When asked to "clear notes":** truncate the file with `> .claude/notes.md`. Confirm when done.
-
-$ARGUMENTS
