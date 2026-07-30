@@ -80,7 +80,7 @@ smiley() {
 }
 
 ## git aliases
-git config --global alias.hub \
+git config --global --replace-all alias.hub \
         '!open "$(git ls-remote --get-url | sed "s|git@github.com:\(.*\)$|https://github.com/\1|" | sed "s|\.git$||")";'
 alias gwt='git worktree list'
 alias gwtl='git worktree list'
@@ -330,11 +330,3 @@ if [ "$TERM" = "screen" -o "$TERM" = "screen-256color" -o "$TERM" = "tmux-256col
 	trap set_screen_window DEBUG
 fi
 
-
-# opencode
-export PATH=/home/twarnock/.opencode/bin:$PATH
-
-# >>> grok installer >>>
-export PATH="$HOME/.grok/bin:$PATH"
-[[ -r "$HOME/.grok/completions/bash/grok.bash" ]] && source "$HOME/.grok/completions/bash/grok.bash"
-# <<< grok installer <<<

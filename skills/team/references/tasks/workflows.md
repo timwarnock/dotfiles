@@ -24,16 +24,22 @@ The implementation agents do NOT commit — they leave the changes uncommitted i
 Committing is yours (step 4 of the worker cycle).
 
 **2 — Verify (adversarial panel).** A barrier: after implementation, run independent,
-read-only reviewers over the full changeset, in parallel. At least these three lenses:
-- **Correctness** — real bugs, broken edge cases, wrong logic.
-- **TDD discipline** — every changed behavior has a covering test; tests assert behavior and
-  public interfaces, never implementation details; no tautological or always-passing test.
-- **Local conventions** — reads the `CLAUDE.md` that governs the changed files and checks the
-  changeset against every convention it states (comment policy, naming, structure). You name
-  that file's path when you author the workflow (e.g. `mined/CLAUDE.md`); its whole job is
-  "read this file, check this diff against it." Each violation reported as `file:line` + the
-  rule it breaks. This is the fix for context decay — a reviewer whose entire focus is the
-  conventions file cannot drift off them the way a long implementation session does.
+read-only reviewers over the full changeset, in parallel. The three lenses are predefined
+agents in `~/.claude/agents/` — pass each as `agentType` (skeleton below). Each agent file
+pins its own model, so the panel runs at reviewer-sized cost no matter what model your own
+session is on:
+- **`correctness-reviewer`** (opus) — real bugs, broken edge cases, wrong logic; every
+  finding carries a concrete failure scenario.
+- **`tdd-reviewer`** (sonnet) — every changed behavior has a covering test; tests assert
+  behavior and public interfaces, never implementation details; no tautological or
+  always-passing test.
+- **`conventions-reviewer`** (sonnet) — discovers every `CLAUDE.md` governing the changed
+  files BY ITSELF (walks each changed file's directory up to the repo root, nearest file
+  wins on conflict) and checks the changeset against every convention stated. Each
+  violation reported as `file:line` + the rule it breaks. This is the fix for context
+  decay — you never name the conventions file, so a decayed session cannot name the wrong
+  one or miss a nested one (e.g. honoring `CLAUDE.md` at the repo root while violating
+  `mined/CLAUDE.md` where the change lives).
 
 The panel returns findings. It fixes nothing.
 
@@ -83,7 +89,6 @@ const FINDINGS = {
 
 // One entry = fully sequential. Add a surface ONLY if it touches disjoint files.
 const surfaces = [{ name: 'core', brief: 'FILL IN: what to build' }]
-const conventionsFile = 'FILL IN: the governing CLAUDE.md, e.g. mined/CLAUDE.md'
 
 phase('Implement')
 await parallel(surfaces.map(s => () =>
@@ -96,14 +101,12 @@ pass, repeat. Scope: ${s.brief}. Touch only this surface's files. Do NOT commit.
 ))
 
 phase('Verify')
-const seeChangeset = 'Review the full changeset — run `git diff` and read any new files shown by `git status`.'
-const LENSES = [
-  { key: 'correctness', prompt: `${seeChangeset} Adversarially find correctness bugs, broken edge cases, wrong logic. Report each as file:line + detail.` },
-  { key: 'tdd', prompt: `${seeChangeset} Verify every changed behavior has a covering test that asserts behavior (not internals) and is not tautological. Report each gap as file:line + detail.` },
-  { key: 'conventions', prompt: `Read ${conventionsFile}. ${seeChangeset} Check the changeset against EVERY convention that file states — comment policy, naming, structure. Report each violation as file:line + the rule it breaks.` },
-]
-const panel = await parallel(LENSES.map(l => () =>
-  agent(l.prompt, { label: `verify:${l.key}`, phase: 'Verify', schema: FINDINGS })
+// Each reviewer is a predefined agent (~/.claude/agents/<agentType>.md) that knows its own
+// procedure and pins its own model — the prompt only points it at the changeset.
+const REVIEWERS = ['correctness-reviewer', 'tdd-reviewer', 'conventions-reviewer']
+const panel = await parallel(REVIEWERS.map(r => () =>
+  agent('Review the uncommitted changeset in this working tree per your instructions.',
+    { label: `verify:${r}`, phase: 'Verify', agentType: r, schema: FINDINGS })
 ))
 
 return panel.filter(Boolean).flatMap(r => r.findings)
