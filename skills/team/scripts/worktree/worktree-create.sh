@@ -35,11 +35,14 @@ home=$(sh "$internal/state-dir.sh") || exit 1
 workdir="$repo/.worktrees/$name"
 [ -e "$workdir" ] && { printf 'worktree-create.sh: already exists: %s\n' "$workdir" >&2; exit 1; }
 
-# Refresh remote-tracking refs so origin/main (or any origin base) is current; a purely
-# local base (stacking on an unpushed branch) still works if the fetch cannot reach origin.
-# git's progress goes to stderr (1>&2) so stdout stays the worktree path alone.
-git -C "$repo" fetch origin 1>&2 \
-    || printf 'worktree-create.sh: git fetch failed — continuing with local refs\n' >&2
+# Bring the local repo up to date BEFORE branching: git-sync-latest.sh fetches (fail-closed),
+# fast-forwards local main to origin/main, and rebases the current worktree's branch onto
+# origin/main — so the new branch forks from current code, not a stale ref. sync already does
+# the fetch this step used to do, so no separate fetch is needed here. Its progress and summary
+# are sent to stderr (1>&2) so stdout stays the worktree path alone. If it exits non-zero
+# (origin unreachable, or the current branch will not rebase cleanly) STOP — we do not build a
+# new worktree on top of an unresolved state; the manager resolves it with the user first.
+sh "$dir/git-sync-latest.sh" 1>&2 || exit 1
 
 git -C "$repo" worktree add "$workdir" -b "$name" "$base" 1>&2 || exit 1
 

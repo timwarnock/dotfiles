@@ -68,6 +68,22 @@ sh ~/.claude/skills/team/scripts/worktree/worktree-cleanup.sh <name> [branch]
 A throwaway spike is torn down the same way. If its branch is unmerged the final
 `git branch -d` refuses it — remove the branch by hand only when you mean to discard the work.
 
+## Staying current after merges — `git-sync-latest.sh`
+
+After a PR merges, the local repo falls behind: local `main` still sits at the old commit and
+the current worktree's branch has not seen the merged code. `git-sync-latest.sh` brings it up to
+date — it fetches, prunes stale remote-tracking refs, fast-forwards local `main` to
+`origin/main`, and rebases the current worktree's branch onto `origin/main`. It takes no
+arguments; it resolves the repo and the grid home itself.
+
+```sh
+sh ~/.claude/skills/team/scripts/worktree/git-sync-latest.sh
+```
+
+`worktree-create.sh` runs it automatically before it branches, and `worktree-cleanup.sh` runs
+it automatically after it deletes a merged branch — so the manager only runs it by hand to
+refresh local state after a merge that was not part of a create or cleanup.
+
 ## Notes
 
 - `notes-<TICKET>.md` is the manager's file; workers do not touch it.

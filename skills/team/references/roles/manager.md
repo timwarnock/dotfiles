@@ -34,7 +34,9 @@ it reports **recovery**, realign with the user before anything else.
    whose exit status is the acceptance criteria (exit 0 = met). This is a **high-level task
    contract** — does the deliverable do what the task asked? — **not** unit tests or TDD
    (those are the worker's own, on its own code). The worker never sees the check, so the
-   task file must stand on its own.
+   task file must stand on its own. **A spike is the exception: author no check.** A spike
+   (branch name containing `spike`) is throwaway exploration, not production code — it
+   bypasses the gatekeeper, so a check would never be consulted. See *Git → Spikes* below.
 3. **Pick a free worker.** Run `worker-states.sh` to see who is idle and who is busy:
    ```sh
    sh ~/.claude/skills/team/scripts/manager/worker-states.sh
@@ -43,12 +45,15 @@ it reports **recovery**, realign with the user before anything else.
    how to proceed — don't stall, and don't do the work yourself.
 4. **Delegate** to that worker:
    ```sh
-   sh ~/.claude/skills/team/scripts/manager/delegate-task.sh [-m sonnet|opus|fable] <Worker> /tmp/<task> [/tmp/<check>]
+   sh ~/.claude/skills/team/scripts/manager/delegate-task.sh [-m sonnet|opus|fable] [-w <worktree>] <Worker> /tmp/<task> [/tmp/<check>]
    ```
    Pick the model with `-m`, sized to the task: `sonnet` for a small, well-defined task
    (config edits, mechanical changes), `fable` for a large or intricate one, and `opus` —
    the default when `-m` is absent — for everything else. The model holds for this task
    only; every delegation stamps its own.
+   When the task builds in its own worktree (see *Git* below), pass `-w <worktree>` — the
+   same `<TICKET>-<aspect>` name you created — so the worker's status line shows that branch
+   while it works, not the shared grid-home branch. Omit `-w` for tasks with no worktree.
    This may take a few minutes — call it with a generous Bash timeout. If it reports the
    task was **rejected**, fix the scratch and resubmit; on success the worker has it.
 
@@ -96,14 +101,31 @@ and branch before you delegate it:
 sh ~/.claude/skills/team/scripts/worktree/worktree-create.sh <TICKET>-<aspect> [base-branch]
 ```
 
-It prints the worktree path; name that path in the task so the worker builds there. Branches
-fork from `origin/main` by default — pass a base branch only for the rare case of stacking on
-another in-flight branch.
+It prints the worktree path; name that path in the task so the worker builds there, and pass
+its `<TICKET>-<aspect>` name to `delegate-task.sh` with `-w` (above) so the worker's status
+line tracks that branch. Branches fork from `origin/main` by default — pass a base branch only
+for the rare case of stacking on another in-flight branch.
+
+**Spikes.** For throwaway exploration, name the branch with `spike` in it (e.g.
+`<TICKET>-spike`). `delegate-task.sh` sees that name (case-insensitive) and bypasses the
+gatekeeper, so you author no acceptance check. To also skip the worker's own tests — a
+spike normally shouldn't grow a test suite — say plainly in the task spec that it is a
+spike, exploration only, and to skip TDD; the branch name alone does not tell the worker
+that. A spike is exploration only: **never turn a spike into a PR.** When the spike answers
+its question, take what you learned into a fresh, gatekept task on a normal branch and build
+the real thing there.
 
 The worker commits locally on that branch. Once a task's work is good you take it the rest of
-the way: push the branch and open or update the PR with `gh`, run by hand and only after the
-user confirms — pushing and PRs reach the outside world. After the PR merges, retire the
-worktree with `worktree-cleanup.sh` (see `references/tasks/worktree.md`).
+the way: push the branch and open or update the PR with `gh`, if there's open questions and
+you are not sure everything is finalized, then push the PR and mark the PR in draft mode and 
+inform the user why you put it in draft (what open questions exist).
+A PR will need human reviewers (other than the user) to approve, once approved the user will merge.
+After the PR merges, retire the
+worktree with `worktree-cleanup.sh` (see `references/tasks/worktree.md`), which also runs
+`git-sync-latest.sh` to bring local `main` and the current worktree's branch up to the merged
+code. `worktree-create.sh` runs it before branching too; run
+`sh ~/.claude/skills/team/scripts/worktree/git-sync-latest.sh` by hand only for an on-demand
+refresh after a merge.
 
 ## Procedures
 

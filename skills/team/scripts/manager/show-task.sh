@@ -1,7 +1,9 @@
 #!/bin/sh
-# show-task.sh <id|worker> — full detail of one archived task. A worker name -> that
-# worker's latest; an id (<when>-<Name>) -> that exact entry. Prints summary, computed
-# status, and the worker's result prose (untrusted context, D4). Manager.
+# show-task.sh <id|worker> — detail of one task. A worker name whose slot holds a live
+# in-flight task -> that live task (status IN FLIGHT); otherwise a worker name -> that
+# worker's latest archived entry; an id (<when>-<Name>) -> that exact archived entry.
+# Prints summary, computed status, and (archived only) the worker's result prose
+# (untrusted context, D4). Manager.
 set -u
 
 [ "$#" -eq 1 ] || { printf 'usage: show-task.sh <id|worker>\n' >&2; exit 1; }
@@ -11,6 +13,20 @@ state=$(sh "$dir/../internal/state-dir.sh")
 [ -d "$state" ] || printf 'note: wrong directory? no team state dir at %s\n' "$state" >&2
 arch="$state/archive"
 arg=$1
+slot="$state/slots/$arg/task"
+
+# A bare worker name whose slot holds a task -> that worker is working NOW. Show the live
+# in-flight task, never stale archive. An explicit archive id, or a worker with no live
+# slot, falls through to the archived entry below.
+if [ ! -d "$arch/$arg" ] && [ -f "$slot" ]; then
+    printf 'id:      %s (live slot)\n' "$arg"
+    printf 'summary: %s\n' "$(head -n 1 "$slot" 2>/dev/null)"
+    printf 'status:  IN FLIGHT (working now; not archived)\n'
+    printf '\n--- task spec ---\n'
+    tail -n +2 "$slot" 2>/dev/null
+    printf '\n(archived history: list-tasks.sh %s)\n' "$arg"
+    exit 0
+fi
 
 if [ -d "$arch/$arg" ]; then
     entry=$arg

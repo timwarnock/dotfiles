@@ -27,6 +27,13 @@ printf 'ABORTED\n\n\ncancelled by manager.\n' > "$target/done"
 
 # Re-instantiate the worker so it lands idle on its next get-task.
 if [ -n "${TMUX:-}" ]; then
+    # Drop the worker's @task marker and @branch pin so the now-idle worker reverts to a
+    # plain grey cwd branch — same visual rule as finish-task.
+    wp=$(sh "$internal/resolve-pane.sh" "$worker" 2>/dev/null)
+    if [ -n "$wp" ]; then
+        tmux set-option -pu -t "$wp" @task 2>/dev/null || true
+        tmux set-option -pu -t "$wp" @branch 2>/dev/null || true
+    fi
     sh "$internal/reinit-pane.sh" "$worker" opus "/team $worker" || true
 fi
 

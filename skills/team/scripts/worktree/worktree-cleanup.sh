@@ -47,5 +47,17 @@ fi
 # 2. Remove the worktree (force: cleanup assumes possibly-uncommitted work).
 git -C "$repo" worktree remove --force "$workdir" || exit 1
 
-# 3. Delete the branch (safe -d: refuses if unmerged, which is the intended guard).
-git -C "$repo" branch -d "$branch"
+# 3. Delete the branch (safe -d: refuses if unmerged, which is the intended guard). Pulling
+#    the merged code only makes sense once the branch actually merged and is deleted, so the
+#    sync runs on a successful delete and is skipped when the delete is refused.
+if git -C "$repo" branch -d "$branch"; then
+    # 4. Branch merged and gone -> bring the merged code into the local repo: git-sync-latest.sh
+    #    advances local main to origin/main and rebases the current worktree's branch onto it.
+    #    The cleanup itself already succeeded, so a sync hiccup is only a warning.
+    sh "$dir/git-sync-latest.sh" \
+        || printf 'worktree-cleanup.sh: git-sync-latest reported an issue — resolve with the user.\n' >&2
+else
+    # Unmerged branch: git branch -d already refused it and said why. Nothing merged, so there
+    # is nothing to sync — preserve that non-zero exit.
+    exit 1
+fi

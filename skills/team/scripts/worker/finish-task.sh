@@ -41,6 +41,10 @@ printf '%s\n\n\n%s\n' "$status" "$prose" > "$target/done"
 # Poke the manager (pane 0): one script-stamped line, status + summary (D10/D19).
 summary=$(head -n 1 "$target/task" 2>/dev/null)
 if [ -n "${TMUX:-}" ]; then
+    # Drop the @task marker and @branch pin: an idle worker falls back to a plain grey
+    # cwd branch, so the status line makes active-vs-idle visually obvious.
+    tmux set-option -pu -t "$TMUX_PANE" @task 2>/dev/null || true
+    tmux set-option -pu -t "$TMUX_PANE" @branch 2>/dev/null || true
     sh "$dir/../internal/tmux-send.sh" 0 "[ $name ] $status — $summary" 2>/dev/null || true
 fi
 

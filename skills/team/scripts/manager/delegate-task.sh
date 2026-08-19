@@ -1,6 +1,11 @@
 #!/bin/sh
-# delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file] — gate, then
-# place. Manager.
+# delegate-task.sh [-m sonnet|opus|fable] [-w <worktree>] <Worker> <task-file> [check-file]
+# — gate, then place. Manager.
+#
+# -w <worktree>: the branch/worktree name the task builds in (as created by
+# worktree-create.sh, e.g. ME-4100-config). Recorded in the slot as `branch` so get-task.sh
+# can pin the worker pane's @branch — the worker's cwd stays the grid home, not the worktree,
+# so the status line would otherwise show the wrong branch. Omit for tasks with no worktree.
 # task-file (and, for production code, check-file) are /tmp scratch the manager authored
 # with the Write tool. Check present = checked lane (gate validates task + check);
 # absent = checkless lane (gate validates the task edits no production code, D13).
@@ -16,6 +21,11 @@
 # `git rev-parse --is-inside-work-tree`, never an LLM:
 #   in a work tree    -> run the gatekeeper (below);
 #   not in a git repo -> no production code, so SKIP the gate and place directly.
+#
+# Spike bypass (deterministic, checked before the git test): a branch whose name contains
+# "spike" skips the gatekeeper. The task's branch is the -w worktree name, or the team-home
+# branch when -w is omitted; the match is case-insensitive. A spike is throwaway exploration,
+# not production code — it must NEVER be turned into a PR.
 #
 # Fresh base (BEFORE the slow gate): the team-home branch is rebased onto a current
 # origin/main before any task starts, so work begins on top of main — never on a stale
@@ -35,10 +45,12 @@
 set -u
 
 model=opus
-while getopts m: opt; do
+worktree=
+while getopts m:w: opt; do
     case $opt in
         m) model=$OPTARG ;;
-        *) printf 'usage: delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file]\n' >&2; exit 1 ;;
+        w) worktree=$OPTARG ;;
+        *) printf 'usage: delegate-task.sh [-m sonnet|opus|fable] [-w <worktree>] <Worker> <task-file> [check-file]\n' >&2; exit 1 ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -48,7 +60,7 @@ case $model in
     *) printf 'delegate-task: unknown model %s (allowed: sonnet, opus, fable)\n' "$model" >&2; exit 1 ;;
 esac
 
-[ "$#" -ge 2 ] || { printf 'usage: delegate-task.sh [-m sonnet|opus|fable] <Worker> <task-file> [check-file]\n' >&2; exit 1; }
+[ "$#" -ge 2 ] || { printf 'usage: delegate-task.sh [-m sonnet|opus|fable] [-w <worktree>] <Worker> <task-file> [check-file]\n' >&2; exit 1; }
 [ -n "${TMUX:-}" ] || { printf 'delegate-task: not inside tmux (the gate needs a pane)\n' >&2; exit 1; }
 
 worker=$1
@@ -97,10 +109,26 @@ if [ "$home_is_repo" = yes ]; then
     }
 fi
 
+# --- Spike bypass (deterministic): a branch whose name contains "spike" is throwaway
+# exploration, not production code, so the gatekeeper is unnecessary. The task's branch is the
+# -w worktree name when given, otherwise the team-home branch. Case-insensitive substring. ---
+branch_name=$worktree
+[ -z "$branch_name" ] && [ "$home_is_repo" = yes ] && \
+    branch_name=$(git -C "$home" rev-parse --abbrev-ref HEAD 2>/dev/null)
+case $(printf '%s' "$branch_name" | tr '[:upper:]' '[:lower:]') in
+    *spike*) is_spike=yes ;;
+    *) is_spike=no ;;
+esac
+
 # --- Gate-gating (Rule 1, deterministic): production code requires a git repo, so outside
 # a work tree there is nothing for the LLM gatekeeper to judge. Same home_is_repo test as the
-# fresh-base step above — the deterministic exit status of git, never an LLM. ---
-if [ "$home_is_repo" = yes ]; then
+# fresh-base step above — the deterministic exit status of git, never an LLM. A spike branch
+# bypasses the gate regardless of repo state. ---
+if [ "$is_spike" = yes ]; then
+    # Spike -> throwaway exploration, never a PR -> the gate is unnecessary; skip it.
+    gate="SKIPPED (spike)"
+    printf 'delegate-task: spike branch (%s) -> gatekeeper bypassed. A spike is throwaway exploration; never turn it into a PR.\n' "$branch_name"
+elif [ "$home_is_repo" = yes ]; then
     # --- Gate (pane-reuse) ---
     vf=$(mktemp)
     : > "$vf"   # ensure empty; we poll for non-empty
@@ -153,6 +181,8 @@ slot="$state/slots/$worker"
 mkdir -p "$slot"
 cp "$taskf" "$slot/task"
 [ -n "$checkf" ] && cp "$checkf" "$slot/check.sh"
+# Record the worktree branch (if any) for get-task.sh to pin as @branch.
+[ -n "$worktree" ] && printf '%s\n' "$worktree" > "$slot/branch"
 rm -f "$taskf"
 [ -n "$checkf" ] && rm -f "$checkf"
 
