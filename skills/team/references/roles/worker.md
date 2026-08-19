@@ -40,14 +40,18 @@ If your task names a worktree, build there — your branch lives in it. Commit y
 locally on that branch as you go, amending or adding fixups to keep the history clean.
 Pushing the branch and opening the PR are the manager's; your part is the local commits.
 
-**3 — Check.** Run `check-task.sh` to test your work against the acceptance criteria:
+**3 — Check.** Run `check-task.sh` to confirm the task got done:
 
 ```sh
 sh ~/.claude/skills/team/scripts/worker/check-task.sh
 ```
 
-It prints `PASS` or `FAIL` — the verdict only, never the criteria behind it. Iterate until
-it passes, or until you judge you cannot pass it.
+It prints `PASS` or `FAIL` — the verdict only, never what it looked at. It is a **coarse
+handshake**, often no more than a few greps, not a test of your work: your real spec is the
+task prose, and your real tests are your own. So passing it is not the goal — doing the task
+is. A `FAIL` means something the task asked for is missing; go find it, and ask the user if
+you cannot. Never contort the code to satisfy a check you cannot see. Iterate until it
+passes, or until you judge you cannot pass it.
 
 **4 — Report.** Run `finish-task.sh`, piping your result prose on a quoted heredoc:
 

@@ -21,9 +21,9 @@ if [ ! -f "$slot/check.sh" ]; then
 fi
 
 if sh "$slot/check.sh" >/dev/null 2>&1; then
-    printf 'PASS — acceptance criteria met.\n'
+    printf 'PASS — the task looks done.\n'
     exit 0
 else
-    printf 'FAIL — acceptance criteria not met.\n'
+    printf 'FAIL — something the task asked for is missing.\n'
     exit 1
 fi

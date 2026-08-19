@@ -7,14 +7,17 @@
 # can pin the worker pane's @branch — the worker's cwd stays the grid home, not the worktree,
 # so the status line would otherwise show the wrong branch. Omit for tasks with no worktree.
 # task-file (and, for production code, check-file) are /tmp scratch the manager authored
-# with the Write tool. Check present = checked lane (gate validates task + check);
-# absent = checkless lane (gate validates the task edits no production code, D13).
+# with the Write tool. Check present -> the gate judges only whether the check would tell
+# someone the task got done; check absent -> the gate judges only whether the task changes
+# production code (if it does, it needs a check).
 #
 # Model (-m): the worker is re-instantiated on this model for THIS task only — the stamp
 # happens inside every pane reset (clear-pane.sh), unconditionally, so the next delegation
 # restamps and nothing leaks between tasks. Default opus. The gatekeeper always runs on
-# opus regardless of -m. The allowlist {sonnet, opus, fable} fails a typo here in
-# milliseconds instead of at the pane.
+# SONNET regardless of -m: its job is one small, quick fitness judgment, and a larger model
+# reads the gate prompt as an invitation to review, which produces over-strict rejections
+# and pushes checks toward long, brittle scripts. The allowlist {sonnet, opus, fable} fails
+# a typo here in milliseconds instead of at the pane.
 #
 # Gate-gating (Rule 1, deterministic): the LLM gatekeeper judges production code, and
 # production code requires a git repo. The git test is the exit status of
@@ -141,7 +144,7 @@ elif [ "$home_is_repo" = yes ]; then
     gatef=$(mktemp)
     sh "$internal/run-gatekeeper.sh" "$taskf" "$vf" "$checkf" > "$gatef" \
         || { printf 'delegate-task: could not compose gatekeeper prompt\n' >&2; rm -f "$vf" "$gatef"; exit 1; }
-    sh "$internal/clear-pane.sh" "$worker" opus \
+    sh "$internal/clear-pane.sh" "$worker" sonnet \
         || { printf 'delegate-task: could not clear %s\n' "$worker" >&2; rm -f "$vf" "$gatef"; exit 1; }
     sh "$internal/tmux-paste.sh" "$worker" < "$gatef" \
         || { printf 'delegate-task: could not drive %s\n' "$worker" >&2; rm -f "$vf" "$gatef"; exit 1; }

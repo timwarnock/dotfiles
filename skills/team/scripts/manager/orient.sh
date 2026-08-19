@@ -106,8 +106,10 @@ else
         printf 'Progress category (commonly "To Do" then "In Progress"). Render the\n'
         printf 'worktrees as one `ticket / status / summary` table. Never show bare keys or\n'
         printf 'paths. From there the user — never you — chooses: resume a worktree, start a\n'
-        printf 'new ticket, or take a quick fix (see references/tasks/worktree.md). You\n'
-        printf 'coordinate and delegate; you never do the work yourself.\n'
+        printf 'new ticket, or take a quick fix (see references/tasks/worktree.md).\n'
+        printf 'Production code you delegate to a worker and never write yourself;\n'
+        printf 'documentation, configuration, research and review are yours to do\n'
+        printf 'directly or with subagents.\n'
     else
         printf 'You are not in a git repo — there is no sprint and no worktrees to\n'
         printf 'coordinate. Showing any working docs in thoughts/ below; nothing to\n'

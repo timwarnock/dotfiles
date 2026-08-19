@@ -46,9 +46,14 @@ finished outcomes; the queue is the *plan*.
 
 Create and delegate each task by the normal flow (see "Delegate" in
 `references/roles/manager.md`): author the task file in `/tmp` (and, for
-production code, a check), then
+production code, a simple check), then
 `delegate-task.sh <Worker> <task-file> [check-file]`. Route only to available
 workers; fit is a tiebreak, never a fence.
+
+Only production code is delegated. Where the queue contains documentation or
+configuration work, that is yours — do it directly or with subagents, with no
+worker, no gatekeeper and no check (see Delegate -> "Who gets the work" in
+`references/roles/manager.md`).
 
 ## Verify against the plan
 

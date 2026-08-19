@@ -17,7 +17,7 @@ report="$dir/gate-report.sh"
 cat "$dir/task-gatekeeper.system.md"
 
 if [ -n "$checkf" ] && [ -f "$checkf" ]; then
-    printf '\nMODE: CODE — a check is provided; validate the TASK and the CHECK.\n'
+    printf '\nMODE: CODE — a check is provided; judge ONLY whether the CHECK would tell someone the task got done.\n'
     printf '\n===== TASK =====\n'
     cat "$taskf"
     printf '\n===== CHECK SCRIPT =====\n'
@@ -29,8 +29,7 @@ else
 fi
 
 printf '\n===== REPORT YOUR VERDICT =====\n'
-printf 'You are the validator, not the worker: judging the TASK is all you do.\n'
-printf 'Run EXACTLY one of these, once — it is your only and final step:\n'
+printf 'Run exactly one of these, once. It is your only and final step:\n'
 printf '  sh %s %s PASS "one-line reason"\n' "$report" "$vf"
 printf '  sh %s %s FAIL "one-line reason"\n' "$report" "$vf"
-printf 'Then stop. The manager clears this pane and a fresh session does the work, not you.\n'
+printf 'Then stop. A fresh session does the work, not you.\n'
